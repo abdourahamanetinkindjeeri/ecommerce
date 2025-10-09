@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  telephone String   @unique
+  adresse   String
+  role      UserRole @default(VENDEUR)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  products Product[]
+
+  @@map("users")
+}
+
+model Product {
+  id             String        @id @default(uuid())
+  title          String
+  description    String?
+  price          Float
+  imageUrl       String?
+  status         ProductStatus @default(EN_ATTENTE)
+  dateExpiration DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  // Relations
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@index([userId])
+  @@index([categoryId])
+  @@index([status])
+  @@map("products")
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  libelle        String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  products Product[]
+
+  @@map("categories")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  VENDEUR
+  GESTIONNAIRE
+  VISITEUR
+}
+
+enum ProductStatus {
+  EN_ATTENTE
+  VALIDE
+  EXPIRE
+}
