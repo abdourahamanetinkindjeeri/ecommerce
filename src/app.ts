@@ -22,6 +22,7 @@ app.use(
         process.env.URL_FRONTEND || "",
         "http://localhost",
         "http://127.0.0.1",
+        "http://localhost:4200", // <-- Ajouté
       ].filter(Boolean);
 
       // Autoriser Postman et outils sans "Origin"

@@ -42,23 +42,24 @@ router.post("/login", async (req, res) => {
         if (!user)
             return res.status(401).json({ error: "Identifiants invalides" });
         const accessPayload = {
-            userId: user.id,
+            id: user.id,
             email: user.email,
             role: user.role,
         };
         const refreshPayload = { email: user.email };
         const accessToken = generateToken(accessPayload, "access");
         const refreshToken = generateToken(refreshPayload, "refresh");
-        setRefreshTokenCookie(res, refreshToken);
+        // === SET COOKIES SECURE ===
         res.cookie("accessToken", accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",
             maxAge: 15 * 60 * 1000, // 15 minutes
         });
+        setRefreshTokenCookie(res, refreshToken); // cookie httpOnly pour le refresh token
+        // === RÉPONSE JSON (SANS TOKEN) ===
         return res.json({
             message: "Connexion réussie",
-            accessToken,
             user: {
                 id: user.id,
                 email: user.email,
@@ -81,19 +82,22 @@ router.post("/refresh", async (req, res) => {
     if (!payload?.email)
         return res.status(401).json({ error: "Token invalide" });
     try {
-        const user = await prisma.user.findUnique({
-            where: { email: payload.email },
-        });
+        const user = await prisma.user.findUnique({ where: { email: payload.email } });
         if (!user)
             return res.status(404).json({ error: "Utilisateur non trouvé" });
         const accessPayload = {
             id: user.id,
             email: user.email,
-            name: user.name,
             role: user.role,
         };
         const accessToken = generateToken(accessPayload, "access");
-        return res.json({ accessToken });
+        res.cookie("accessToken", accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 15 * 60 * 1000,
+        });
+        return res.json({ message: "Token rafraîchi" });
     }
     catch (error) {
         console.error("Erreur lors du refresh :", error);
@@ -103,6 +107,7 @@ router.post("/refresh", async (req, res) => {
 // === LOGOUT ===
 router.post("/logout", (req, res) => {
     clearRefreshTokenCookie(res);
+    res.clearCookie("accessToken");
     return res.json({ message: "Déconnexion réussie" });
 });
 export default router;

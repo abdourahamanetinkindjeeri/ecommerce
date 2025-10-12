@@ -18,7 +18,9 @@ const ProductBaseSchema = {
     ),
   description: z.string().nullable().optional(),
   price: z.number().positive(ProductMessages.INVALID_PRICE),
-  imageUrl: z.string().url().nullable().optional(),
+  imageUrls: z
+    .array(z.string().url())
+    .min(1, "Au moins une image est requise."),
   status: z.nativeEnum(ProductStatus).optional(),
   dateExpiration: z.date().nullable().optional(),
   userId: z.string().uuid(ProductMessages.USER_REQUIRED),
@@ -54,11 +56,31 @@ export class ProductController extends BaseController<
   // Surcharger les méthodes pour utiliser les messages personnalisés
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = this.createSchema?.parse(req.body) ?? req.body;
-      const entity = await this.service.create(data);
+      // On récupère les URLs d'images du middleware
+      const imageUrls: string[] = req.body.imageUrls;
+      if (!imageUrls || !Array.isArray(imageUrls) || imageUrls.length === 0) {
+        res.status(400).json({ message: "Au moins une image est requise." });
+        return;
+      }
+      // On prépare les données du produit sans imageUrls
+      const { imageUrls: _, ...productData } = req.body;
+      // Création du produit
+      const entity = await this.service.create(productData);
+      // Création des images associées dans ProductImage
+      const images = await Promise.all(
+        imageUrls.map((url) =>
+          prisma.productImage.create({
+            data: {
+              url,
+              productId: entity.id,
+            },
+          })
+        )
+      );
       res
         .status(201)
-        .json({ message: ProductMessages.CREATION_SUCCESS, entity });
+        .json({ message: ProductMessages.CREATION_SUCCESS, entity, images });
+      return;
     } catch (err) {
       next(err);
     }
@@ -71,7 +93,15 @@ export class ProductController extends BaseController<
       const skip = (page - 1) * limit;
       const search = (req.query.search as string) || undefined;
 
-      let entities = await this.service.findAll({ skip, take: limit, search });
+      // Récupération des produits avec leurs images
+      const entities = await prisma.product.findMany({
+        skip,
+        take: limit,
+        where: search
+          ? { title: { contains: search, mode: "insensitive" } }
+          : undefined,
+        include: { images: true },
+      });
 
       res.status(200).json({
         page,
@@ -88,7 +118,11 @@ export class ProductController extends BaseController<
   getOne = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-      const entity = await this.service.findById(id);
+      // Récupération du produit avec ses images
+      const entity = await prisma.product.findUnique({
+        where: { id },
+        include: { images: true },
+      });
       if (!entity)
         return res.status(404).json({ error: ProductMessages.NOT_FOUND });
       res

@@ -29,9 +29,7 @@ function generateToken(payload: object, type: TokenType): string {
 }
 
 // === EXTRACTION DU PAYLOAD DU REFRESH TOKEN ===
-function extractPayloadFromRefreshToken(
-  token: string
-): { email?: string } | null {
+function extractPayloadFromRefreshToken(token: string) {
   try {
     const payload = jwt.verify(token, JWT_REFRESH_SECRET, {
       algorithms: [JWT_ALGO],
@@ -53,7 +51,7 @@ router.post("/login", async (req: Request, res: Response) => {
     if (!user) return res.status(401).json({ error: "Identifiants invalides" });
 
     const accessPayload = {
-      userId: user.id,
+      id: user.id,
       email: user.email,
       role: user.role,
     };
@@ -63,16 +61,19 @@ router.post("/login", async (req: Request, res: Response) => {
     const accessToken = generateToken(accessPayload, "access");
     const refreshToken = generateToken(refreshPayload, "refresh");
 
-    setRefreshTokenCookie(res, refreshToken);
+    // === SET COOKIES SECURE ===
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
+
+    setRefreshTokenCookie(res, refreshToken); // cookie httpOnly pour le refresh token
+
+    // === RÉPONSE JSON (SANS TOKEN) ===
     return res.json({
       message: "Connexion réussie",
-      accessToken,
       user: {
         id: user.id,
         email: user.email,
@@ -95,21 +96,25 @@ router.post("/refresh", async (req: Request, res: Response) => {
   if (!payload?.email) return res.status(401).json({ error: "Token invalide" });
 
   try {
-    const user = await prisma.user.findUnique({
-      where: { email: payload.email },
-    });
-
+    const user = await prisma.user.findUnique({ where: { email: payload.email } });
     if (!user) return res.status(404).json({ error: "Utilisateur non trouvé" });
 
     const accessPayload = {
       id: user.id,
       email: user.email,
-      name: user.name,
       role: user.role,
     };
 
     const accessToken = generateToken(accessPayload, "access");
-    return res.json({ accessToken });
+
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 15 * 60 * 1000,
+    });
+
+    return res.json({ message: "Token rafraîchi" });
   } catch (error) {
     console.error("Erreur lors du refresh :", error);
     return res.status(500).json({ error: "Erreur serveur" });
@@ -119,7 +124,9 @@ router.post("/refresh", async (req: Request, res: Response) => {
 // === LOGOUT ===
 router.post("/logout", (req: Request, res: Response) => {
   clearRefreshTokenCookie(res);
+  res.clearCookie("accessToken");
   return res.json({ message: "Déconnexion réussie" });
 });
 
 export default router;
+

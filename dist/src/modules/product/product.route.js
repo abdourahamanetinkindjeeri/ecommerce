@@ -1,4 +1,6 @@
 import { Router } from "express";
+import multer from "multer";
+import { uploadProductImagesMiddleware } from "../../middleware/uploadProductImagesMiddleware.js";
 export default function buildProductRoute(controller) {
     const router = Router();
     // Middleware de validation pour les prix (s'assurer qu'ils sont positifs)
@@ -14,7 +16,11 @@ export default function buildProductRoute(controller) {
         }
         next();
     };
-    router.post("/", validatePriceMiddleware, controller.create.bind(controller));
+    // Multer configuration pour l'upload des images
+    const upload = multer({ dest: "uploads/" });
+    // Route de création de produit avec upload d'images et validation du prix
+    router.post("/", upload.array("images", 10), // max 10 images
+    uploadProductImagesMiddleware, validatePriceMiddleware, controller.create.bind(controller));
     router.get("/", controller.getAll.bind(controller));
     router.get("/:id", controller.getOne.bind(controller));
     router.put("/:id", validatePriceMiddleware, controller.update.bind(controller));

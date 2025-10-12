@@ -5,12 +5,11 @@ export type CreateProductDto = Omit<
   Product,
   "id" | "createdAt" | "updatedAt"
 > & {
-  // Tous les champs requis/optionnels du modèle
   title: string;
   description?: string;
   price: number;
-  imageUrl?: string;
-  status?: ProductStatus; // Par défaut EN_ATTENTE
+  imageUrls: string[]; // tableau d'URLs d'images
+  status?: ProductStatus;
   dateExpiration?: Date;
   userId: string;
   categoryId: string;
