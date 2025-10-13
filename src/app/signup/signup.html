@@ -1,0 +1,207 @@
+<div
+  class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-purple-900 to-black relative overflow-hidden"
+>
+  <!-- Particules d’arrière-plan -->
+  <div class="particles absolute inset-0 z-0">
+    <div
+      *ngFor="let p of particles"
+      class="particle"
+      [style.left]="p.left"
+      [style.top]="p.top"
+      [style.animationDelay]="p.delay"
+    ></div>
+  </div>
+
+  <!-- Formulaire -->
+  <div class="relative w-full max-w-3xl z-10 p-6">
+    <div
+      class="relative backdrop-blur-2xl bg-white/5 rounded-3xl p-10 shadow-2xl border border-white/10 transition-transform duration-300"
+      [class.scale-105]="isCardHovered"
+      (mouseenter)="isCardHovered = true"
+      (mouseleave)="isCardHovered = false"
+    >
+      <!-- Overlay -->
+      <div
+        class="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 rounded-3xl pointer-events-none"
+      ></div>
+
+      <div class="relative">
+        <!-- Logo -->
+        <div class="flex justify-center mb-6">
+          <div class="relative">
+            <div
+              class="bg-gradient-to-br from-purple-500 to-pink-500 p-4 rounded-2xl shadow-2xl transition-transform duration-500"
+              [class.scale-110]="isCardHovered"
+            >
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 
+                  0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Titre -->
+        <div class="text-center mb-8">
+          <h1
+            class="text-4xl font-bold text-white mb-2 bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent"
+          >
+            Créer un compte
+          </h1>
+          <p class="text-purple-300 text-sm">Rejoignez-nous dès aujourd'hui</p>
+        </div>
+
+        <!-- 🧾 Formulaire -->
+        <div class="space-y-6">
+          <!-- Ligne 1 : Nom + Email -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-purple-200 mb-2">Nom complet</label>
+              <input
+                type="text"
+                [(ngModel)]="name"
+                name="name"
+                class="w-full px-4 py-3 bg-white/5 border-2 border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-400"
+                placeholder="Amadou DIALLO"
+                required
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-purple-200 mb-2">Email</label>
+              <input
+                type="email"
+                [(ngModel)]="email"
+                name="email"
+                class="w-full px-4 py-3 bg-white/5 border-2 border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-400"
+                placeholder="amadou12@ecommerce.sn"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Ligne 2 : Téléphone + Mot de passe -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-purple-200 mb-2">Téléphone</label>
+              <input
+                type="tel"
+                [(ngModel)]="telephone"
+                name="telephone"
+                class="w-full px-4 py-3 bg-white/5 border-2 border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-400"
+                placeholder="+221771234552"
+                required
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-purple-200 mb-2">Mot de passe</label>
+              <div class="relative">
+                <input
+                  [type]="showPassword ? 'text' : 'password'"
+                  [(ngModel)]="password"
+                  name="password"
+                  class="w-full px-4 py-3 bg-white/5 border-2 border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-400"
+                  placeholder="••••••••"
+                  required
+                />
+                <button
+                  type="button"
+                  (click)="togglePassword()"
+                  class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-400"
+                >
+                  👁️
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ligne 3 : Confirmation + Adresse -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-purple-200 mb-2">Confirmation</label>
+              <div class="relative">
+                <input
+                  [type]="showPassword ? 'text' : 'password'"
+                  [(ngModel)]="confirmPassword"
+                  name="confirmPassword"
+                  class="w-full px-4 py-3 bg-white/5 border-2 border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-400"
+                  placeholder="••••••••"
+                  required
+                />
+                <button
+                  type="button"
+                  (click)="togglePassword()"
+                  class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-400"
+                >
+                  👁️
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-purple-200 mb-2">Adresse</label>
+              <input
+                type="text"
+                [(ngModel)]="adresse"
+                name="adresse"
+                class="w-full px-4 py-3 bg-white/5 border-2 border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-400"
+                placeholder="Medina, Dakar, Sénégal"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Conditions -->
+          <div class="flex items-center space-x-2 text-purple-200">
+            <input
+              type="checkbox"
+              [(ngModel)]="acceptTerms"
+              name="acceptTerms"
+              class="w-4 h-4 accent-purple-500 rounded"
+            />
+            <span class="text-sm">
+              J'accepte les
+              <a href="#" class="text-purple-400 hover:text-white underline">conditions</a>
+              et la
+              <a href="#" class="text-purple-400 hover:text-white underline"
+                >politique de confidentialité</a
+              >.
+            </span>
+          </div>
+
+          <!-- Bouton -->
+          <button
+            type="button"
+            (click)="onSubmit()"
+            [disabled]="isSubmitting || !acceptTerms"
+            class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-4 rounded-xl shadow-lg hover:scale-105 transition-all duration-300 disabled:opacity-50"
+          >
+            <span *ngIf="!isSubmitting">Créer mon compte</span>
+            <div
+              *ngIf="isSubmitting"
+              class="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto"
+            ></div>
+          </button>
+
+          <!-- Lien connexion -->
+          <p class="text-center text-purple-200 text-sm mt-6">
+            Vous avez déjà un compte ?
+            <a
+              href="#"
+              (click)="onConnectRequested(); $event.preventDefault()"
+              class="text-purple-400 hover:text-white font-semibold underline"
+            >
+              Se connecter
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

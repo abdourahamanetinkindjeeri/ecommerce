@@ -1,0 +1,194 @@
+/* Orb animations */
+.orb-1 {
+  animation: orb-float-1 8s ease-in-out infinite;
+}
+.orb-2 {
+  animation: orb-float-2 8s ease-in-out infinite 1s;
+}
+.orb-3 {
+  animation: orb-float-3 10s ease-in-out infinite 2s;
+}
+
+@keyframes orb-float-1 {
+  0%,
+  100% {
+    transform: scale(1) translate(0, 0);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.2) translate(20px, -20px);
+    opacity: 0.5;
+  }
+}
+
+@keyframes orb-float-2 {
+  0%,
+  100% {
+    transform: scale(1.2) translate(0, 0);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1) translate(-20px, 20px);
+    opacity: 0.5;
+  }
+}
+
+@keyframes orb-float-3 {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.3);
+    opacity: 0.4;
+  }
+}
+
+/* Particle animation */
+.particle {
+  animation: particle-fall 3s ease-in-out infinite;
+}
+
+@keyframes particle-fall {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-30px);
+  }
+}
+
+/* Logo glow animation */
+.logo-glow {
+  animation: logo-pulse 2s ease-in-out infinite;
+}
+
+@keyframes logo-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.2);
+  }
+}
+
+/* Logo rotation */
+.rotate-360 {
+  transform: rotate(360deg);
+}
+
+/* Input glow */
+.input-glow {
+  animation: input-glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes input-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Button glow */
+.button-glow {
+  animation: button-glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes button-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Spinner animation */
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Scale utilities */
+.scale-102 {
+  transform: scale(1.02);
+}
+
+.scale-105 {
+  transform: scale(1.05);
+}
+
+.scale-110 {
+  transform: scale(1.1);
+}
+
+/* Title gradient animation */
+.title-gradient {
+  animation: title-shimmer 3s ease-in-out infinite;
+  background-size: 200% auto;
+}
+
+@keyframes title-shimmer {
+  0%,
+  100% {
+    background-position: 0% center;
+  }
+  50% {
+    background-position: 100% center;
+  }
+}
+
+/* Autofill styles */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: white;
+  -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.05) inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Smooth transitions */
+* {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animation pour le spinner du bouton */
+.spinner {
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Effet de rotation du logo */
+.rotate-360 {
+  transform: rotate(360deg);
+  transition: transform 0.8s ease;
+}
+
+/* Léger zoom sur les éléments */
+.scale-102 {
+  transform: scale(1.02);
+}

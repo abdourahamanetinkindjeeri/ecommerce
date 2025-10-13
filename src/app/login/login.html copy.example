@@ -1,0 +1,212 @@
+<div *ngIf="!showSignup">
+  <!-- Formulaire de connexion -->
+  <div class="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 flex items-center justify-center p-4 relative overflow-hidden">
+
+    <!-- Animated background orbs -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div
+        class="absolute w-[500px] h-[500px] rounded-full orb orb-1"
+        [style.background]="'radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%)'"
+        [style.top]="'-10%'"
+        [style.left]="'-10%'">
+      </div>
+      <div
+        class="absolute w-[400px] h-[400px] rounded-full orb orb-2"
+        [style.background]="'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)'"
+        [style.bottom]="'-10%'"
+        [style.right]="'-10%'">
+      </div>
+      <div
+        class="absolute w-[300px] h-[300px] rounded-full orb orb-3"
+        [style.background]="'radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, transparent 70%)'"
+        [style.top]="'50%'"
+        [style.left]="'50%'"
+        [style.transform]="'translate(-50%, -50%)'">
+      </div>
+    </div>
+
+    <!-- Floating particles -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div *ngFor="let particle of particles"
+           class="absolute w-1 h-1 bg-purple-400 rounded-full particle"
+           [style.left]="particle.left"
+           [style.top]="particle.top"
+           [style.animation-delay]="particle.delay">
+      </div>
+    </div>
+
+    <!-- Login Card -->
+    <div class="relative w-full max-w-md z-10" [@fadeInUp]>
+      <div class="relative backdrop-blur-2xl bg-white/5 rounded-3xl p-8 shadow-2xl border border-white/10 transition-transform duration-300"
+           [class.scale-105]="isCardHovered"
+           (mouseenter)="isCardHovered = true"
+           (mouseleave)="isCardHovered = false">
+
+        <!-- Gradient overlay -->
+        <div class="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 rounded-3xl pointer-events-none"></div>
+
+        <!-- Content -->
+        <div class="relative" [@staggerItems]="items.length">
+
+          <!-- Logo -->
+          <div class="flex justify-center mb-8">
+            <div class="relative logo-container">
+              <div class="bg-gradient-to-br from-purple-500 to-pink-500 p-4 rounded-2xl shadow-2xl transition-all duration-600"
+                   [class.rotate-360]="isCardHovered"
+                   [class.scale-110]="isCardHovered">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                </svg>
+              </div>
+              <div class="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl blur-xl logo-glow"></div>
+            </div>
+          </div>
+
+          <!-- Title -->
+          <div class="text-center mb-8">
+            <h1 class="text-5xl font-bold text-white mb-2 bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent title-gradient">
+              Bienvenue
+            </h1>
+            <p class="text-purple-300">Connectez-vous pour continuer</p>
+          </div>
+
+          <!-- Email Input -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-purple-200 mb-2">Email</label>
+            <div class="relative input-container"
+                 (mouseenter)="isEmailHovered = true"
+                 (mouseleave)="isEmailHovered = false">
+              <div class="absolute left-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 pointer-events-none"
+                   [class.text-purple-400]="isFocusedEmail"
+                   [class.scale-110]="isFocusedEmail"
+                   [class.text-gray-400]="!isFocusedEmail">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <input type="email"
+                     [(ngModel)]="email"
+                     name="login"
+                     (focus)="isFocusedEmail = true"
+                     (blur)="isFocusedEmail = false"
+                     placeholder="votre@email.com"
+                     required
+                     class="w-full pl-12 pr-4 py-3.5 bg-white/5 border-2 rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all duration-300"
+                     [class.border-purple-400]="isFocusedEmail"
+                     [class.bg-opacity-10]="isFocusedEmail"
+                     [class.scale-102]="isFocusedEmail"
+                     [class.border-white]="!isFocusedEmail"
+                     [class.border-opacity-10]="!isFocusedEmail"
+                     [class.scale-102]="isEmailHovered"/>
+              <div *ngIf="isFocusedEmail" class="absolute inset-0 rounded-xl bg-purple-500/20 blur-xl -z-10 pointer-events-none input-glow"></div>
+              <!-- Error message -->
+              <div *ngIf="errors?.email" class="text-red-500 text-sm mt-1">{{ errors.email }}</div>
+            </div>
+          </div>
+
+          <!-- Password Input -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-purple-200 mb-2">Mot de passe</label>
+            <div class="relative input-container"
+                 (mouseenter)="isPasswordHovered = true"
+                 (mouseleave)="isPasswordHovered = false">
+              <div class="absolute left-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 pointer-events-none"
+                   [class.text-purple-400]="isFocusedPassword"
+                   [class.scale-110]="isFocusedPassword"
+                   [class.text-gray-400]="!isFocusedPassword">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+              </div>
+              <input [type]="showPassword ? 'text' : 'password'"
+                     [(ngModel)]="password"
+                     name="password"
+                     (focus)="isFocusedPassword = true"
+                     (blur)="isFocusedPassword = false"
+                     placeholder="••••••••"
+                     required
+                     class="w-full pl-12 pr-12 py-3.5 bg-white/5 border-2 rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all duration-300"
+                     [class.border-purple-400]="isFocusedPassword"
+                     [class.bg-opacity-10]="isFocusedPassword"
+                     [class.scale-102]="isFocusedPassword"
+                     [class.border-white]="!isFocusedPassword"
+                     [class.border-opacity-10]="!isFocusedPassword"
+                     [class.scale-102]="isPasswordHovered"/>
+              <button type="button" (click)="togglePassword()"
+                      class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-400 transition-all duration-200 hover:scale-110">
+                <svg *ngIf="!showPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+                <svg *ngIf="showPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                </svg>
+              </button>
+              <div *ngIf="isFocusedPassword" class="absolute inset-0 rounded-xl bg-purple-500/20 blur-xl -z-10 pointer-events-none input-glow"></div>
+              <!-- Error message -->
+              <div *ngIf="errors?.password" class="text-red-500 text-sm mt-1">{{ errors.password }}</div>
+            </div>
+          </div>
+
+          <!-- General error -->
+          <div *ngIf="errors?.general" class="text-red-400 text-sm text-center mb-4">{{ errors.general }}</div>
+
+          <!-- Remember Me & Forgot Password -->
+          <div class="flex items-center justify-between mb-6 text-sm">
+            <label class="flex items-center text-purple-200 cursor-pointer group transition-all hover:scale-105">
+              <input type="checkbox" [(ngModel)]="rememberMe" name="rememberMe"
+                     class="mr-2 w-4 h-4 rounded border-white border-opacity-20 bg-white bg-opacity-5 cursor-pointer accent-purple-500"/>
+              <span class="group-hover:text-white transition-colors">Se souvenir</span>
+            </label>
+            <a href="#" class="text-purple-300 hover:text-white transition-all duration-200 hover:underline hover:translate-x-1"
+               (click)="$event.preventDefault()">Mot de passe oublié ?</a>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="button"
+                  (click)="onSubmit()"
+                  [disabled]="isSubmitting"
+                  class="w-full relative bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-4 rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
+                  (mouseenter)="isSubmitHovered = true"
+                  (mouseleave)="isSubmitHovered = false">
+            <div class="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-500 transition-transform duration-300 pointer-events-none"
+                 [class.translate-x-0]="isSubmitHovered"
+                 [class.translate-x-full]="!isSubmitHovered">
+            </div>
+            <span class="relative z-10 flex items-center justify-center">
+              <span *ngIf="!isSubmitting">Se connecter</span>
+              <div *ngIf="isSubmitting" class="w-6 h-6 border-2 border-white border-t-transparent rounded-full spinner mx-auto"></div>
+            </span>
+            <div class="absolute inset-0 rounded-xl blur-xl bg-purple-500/50 button-glow pointer-events-none"></div>
+          </button>
+
+          <!-- Divider -->
+          <div class="flex items-center my-8">
+            <div class="flex-1 border-t border-white/20"></div>
+            <span class="px-4 text-purple-300 text-sm">ou</span>
+            <div class="flex-1 border-t border-white/20"></div>
+          </div>
+
+          <!-- Sign Up Link -->
+          <p class="text-center text-purple-200 text-sm mt-8">
+            Pas encore de compte ?
+            <a href="#" (click)="showSignupForm(); $event.preventDefault()"
+               class="text-purple-400 hover:text-white font-semibold transition-all duration-200 hover:underline ml-1 hover:scale-110 inline-block">
+              S'inscrire
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showSignup">
+  <app-signup (connectRequested)="showLoginForm()"></app-signup>
+</div>
