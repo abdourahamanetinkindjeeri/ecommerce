@@ -72,21 +72,6 @@ export default abstract class BaseController<
 
       let entities = await this.service.findAll({ skip, take: limit, search });
 
-      // --- Filtrage entreprise si applicable ---
-      const entrepriseId = (req as any).user?.entrepriseId;
-      if (entrepriseId && entities.length) {
-        const first = entities[0] as any;
-        if ("entrepriseId" in first) {
-          entities = entities.filter(
-            (e: any) => e.entrepriseId === entrepriseId
-          );
-        } else if ("clientId" in first) {
-          entities = entities.filter(
-            (e: any) => e.client?.entrepriseId === entrepriseId
-          );
-        }
-      }
-
       res.status(200).json({
         page,
         limit,

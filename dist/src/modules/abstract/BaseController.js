@@ -48,17 +48,6 @@ export default class BaseController {
             const skip = (page - 1) * limit;
             const search = req.query.search || undefined;
             let entities = await this.service.findAll({ skip, take: limit, search });
-            // --- Filtrage entreprise si applicable ---
-            const entrepriseId = req.user?.entrepriseId;
-            if (entrepriseId && entities.length) {
-                const first = entities[0];
-                if ("entrepriseId" in first) {
-                    entities = entities.filter((e) => e.entrepriseId === entrepriseId);
-                }
-                else if ("clientId" in first) {
-                    entities = entities.filter((e) => e.client?.entrepriseId === entrepriseId);
-                }
-            }
             res.status(200).json({
                 page,
                 limit,

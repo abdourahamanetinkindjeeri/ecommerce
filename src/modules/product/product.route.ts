@@ -2,6 +2,7 @@ import { Router, Request, Response, NextFunction } from "express";
 import multer from "multer";
 import { uploadProductImagesMiddleware } from "../../middleware/uploadProductImagesMiddleware.js";
 import { ProductController } from "./product.controller.js";
+import { requireAuth, requireRole } from "../../middleware/authMiddleware.js";
 
 export default function buildProductRoute(controller: ProductController) {
   const router = Router();
@@ -37,12 +38,16 @@ export default function buildProductRoute(controller: ProductController) {
   );
 
   router.get("/", controller.getAll.bind(controller));
+  router.get("/status/:status", controller.getByStatus.bind(controller));
   router.get("/:id", controller.getOne.bind(controller));
   router.put(
     "/:id",
     validatePriceMiddleware,
     controller.update.bind(controller)
   );
+  router.post("/:id/approve", controller.approve.bind(controller));
+  router.post("/:id/renew", controller.renew.bind(controller));
+  router.delete("/expired", controller.deleteExpired.bind(controller));
   router.delete("/:id", controller.delete.bind(controller));
   return router;
 }

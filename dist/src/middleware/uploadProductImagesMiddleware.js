@@ -22,24 +22,27 @@ export async function uploadProductImagesMiddleware(req, res, next) {
         }
         if (!files || files.length === 0) {
             console.error("Aucune image reçue. req.files:", req.files, "req.file:", req.file);
-            return res
-                .status(400)
-                .json({
+            return res.status(400).json({
                 message: "Aucune image reçue.",
                 files: req.files,
                 file: req.file,
             });
         }
         const imageUrls = [];
+        const fs = await import("fs/promises");
         for (const file of files) {
             try {
                 const result = await cloudinary.uploader.upload(file.path, {
                     folder: "products",
                 });
                 imageUrls.push(result.secure_url);
+                // Suppression du fichier temporaire
+                await fs.unlink(file.path);
             }
             catch (err) {
                 console.error("Erreur Cloudinary:", err);
+                // Suppression du fichier temporaire même en cas d'erreur
+                await fs.unlink(file.path).catch(() => { });
                 return res
                     .status(500)
                     .json({ message: "Erreur Cloudinary", error: err });

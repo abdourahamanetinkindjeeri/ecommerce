@@ -3,7 +3,7 @@ import { Product, ProductStatus } from "@prisma/client";
 // DTO pour création
 export type CreateProductDto = Omit<
   Product,
-  "id" | "createdAt" | "updatedAt"
+  "id" | "createdAt" | "updatedAt" | "images"
 > & {
   title: string;
   description?: string;
@@ -13,6 +13,7 @@ export type CreateProductDto = Omit<
   dateExpiration?: Date;
   userId: string;
   categoryId: string;
+  views?: number;
 };
 
 // DTO pour mise à jour

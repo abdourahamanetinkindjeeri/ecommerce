@@ -10,6 +10,8 @@ export var ProductMessages;
     ProductMessages["STATUS_UPDATED"] = "Statut du produit mis \u00E0 jour avec succ\u00E8s";
     ProductMessages["VALIDATED_SUCCESS"] = "Produit valid\u00E9 avec succ\u00E8s";
     ProductMessages["REJECTED_SUCCESS"] = "Produit rejet\u00E9 avec succ\u00E8s";
+    ProductMessages["RENEW_SUCCESS"] = "Produit renouvel\u00E9 avec succ\u00E8s";
+    ProductMessages["CLEANUP_SUCCESS"] = "Produits expir\u00E9s supprim\u00E9s avec succ\u00E8s";
     // Messages d'erreur
     ProductMessages["NOT_FOUND"] = "Produit non trouv\u00E9";
     ProductMessages["TITLE_ALREADY_EXISTS"] = "Un produit avec ce titre existe d\u00E9j\u00E0";
@@ -47,5 +49,5 @@ export var ProductValidationRules;
     ProductValidationRules[ProductValidationRules["MAX_DESCRIPTION_LENGTH"] = 1000] = "MAX_DESCRIPTION_LENGTH";
     ProductValidationRules[ProductValidationRules["MIN_PRICE"] = 0.01] = "MIN_PRICE";
     ProductValidationRules[ProductValidationRules["MAX_PRICE"] = 999999999] = "MAX_PRICE";
-    ProductValidationRules[ProductValidationRules["DEFAULT_EXPIRATION_DAYS"] = 90] = "DEFAULT_EXPIRATION_DAYS";
+    ProductValidationRules[ProductValidationRules["DEFAULT_EXPIRATION_DAYS"] = 7] = "DEFAULT_EXPIRATION_DAYS";
 })(ProductValidationRules || (ProductValidationRules = {}));

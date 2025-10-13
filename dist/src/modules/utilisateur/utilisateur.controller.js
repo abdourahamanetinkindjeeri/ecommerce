@@ -15,6 +15,7 @@ const UserBaseSchema = {
         .regex(/^((\+221|0)?(7[0678]|75|76|77|78|70|71|79)[0-9]{7})$/, "Numéro de téléphone sénégalais invalide"),
     adresse: z.string().min(5, "L'adresse doit contenir au moins 5 caractères"),
     role: z.nativeEnum(UserRole).optional(),
+    isVip: z.boolean().optional(),
 };
 export class UserController extends BaseController {
     service;

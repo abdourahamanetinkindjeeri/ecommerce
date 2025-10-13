@@ -22,8 +22,12 @@ export default function buildProductRoute(controller) {
     router.post("/", upload.array("images", 10), // max 10 images
     uploadProductImagesMiddleware, validatePriceMiddleware, controller.create.bind(controller));
     router.get("/", controller.getAll.bind(controller));
+    router.get("/status/:status", controller.getByStatus.bind(controller));
     router.get("/:id", controller.getOne.bind(controller));
     router.put("/:id", validatePriceMiddleware, controller.update.bind(controller));
+    router.post("/:id/approve", controller.approve.bind(controller));
+    router.post("/:id/renew", controller.renew.bind(controller));
+    router.delete("/expired", controller.deleteExpired.bind(controller));
     router.delete("/:id", controller.delete.bind(controller));
     return router;
 }

@@ -31,6 +31,7 @@ const UserBaseSchema = {
     ),
   adresse: z.string().min(5, "L'adresse doit contenir au moins 5 caractères"),
   role: z.nativeEnum(UserRole).optional(),
+  isVip: z.boolean().optional(),
 };
 
 export class UserController extends BaseController<

@@ -27,6 +27,7 @@ model User {
   telephone String   @unique
   adresse   String
   role      UserRole @default(VENDEUR)
+  isVip     Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -46,6 +47,7 @@ model Product {
   dateExpiration DateTime?
   createdAt DateTime @default(now())
   updatedAt      DateTime      @updatedAt
+  views          Int           @default(0)
 
   // Relations
   userId     String

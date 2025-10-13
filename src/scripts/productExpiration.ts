@@ -1,26 +1,41 @@
 import cron from "node-cron";
 import prisma from "../prismaClient.js";
 
-// Supprime les produits publiés depuis plus de 7 jours
+// Supprime les produits dont la date d'expiration est dépassée
 async function deleteExpiredProducts() {
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const now = new Date();
   const deleted = await prisma.product.deleteMany({
     where: {
-      createdAt: {
-        lt: sevenDaysAgo,
+      dateExpiration: {
+        lt: now,
       },
     },
   });
-  console.log(`${deleted.count} produit(s) supprimé(s)`);
+  console.log(`${deleted.count} produit(s) expiré(s) supprimé(s)`);
 }
 
-// Renouvelle la publication d'un produit (remet à jour la date de publication)
+// Renouvelle la publication d'un produit (ajoute 7 jours à la date d'expiration)
 async function renewProduct(productId: string) {
+  const product = await prisma.product.findUnique({
+    where: { id: productId }
+  });
+
+  if (!product) {
+    throw new Error('Produit non trouvé');
+  }
+
+  if (product.dateExpiration && product.dateExpiration < new Date()) {
+    throw new Error('Produit expiré, impossible de renouveler');
+  }
+
+  const newExpirationDate = new Date(product.dateExpiration || new Date());
+  newExpirationDate.setDate(newExpirationDate.getDate() + 7);
+
   await prisma.product.update({
     where: { id: productId },
-    data: { createdAt: new Date() },
+    data: { dateExpiration: newExpirationDate },
   });
-  console.log(`Produit ${productId} renouvelé.`);
+  console.log(`Produit ${productId} renouvelé jusqu'au ${newExpirationDate.toISOString()}.`);
 }
 
 // Exemple d'utilisation

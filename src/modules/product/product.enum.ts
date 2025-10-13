@@ -10,6 +10,8 @@ export enum ProductMessages {
   STATUS_UPDATED = "Statut du produit mis à jour avec succès",
   VALIDATED_SUCCESS = "Produit validé avec succès",
   REJECTED_SUCCESS = "Produit rejeté avec succès",
+  RENEW_SUCCESS = "Produit renouvelé avec succès",
+  CLEANUP_SUCCESS = "Produits expirés supprimés avec succès",
 
   // Messages d'erreur
   NOT_FOUND = "Produit non trouvé",
@@ -50,5 +52,5 @@ export enum ProductValidationRules {
   MAX_DESCRIPTION_LENGTH = 1000,
   MIN_PRICE = 0.01,
   MAX_PRICE = 999999999,
-  DEFAULT_EXPIRATION_DAYS = 90,
+  DEFAULT_EXPIRATION_DAYS = 7,
 }

@@ -8,7 +8,8 @@ export type CreateUserDto = Omit<User, "id" | "createdAt" | "updatedAt"> & {
   password: string;
   telephone: string;
   adresse: string;
-  role?: UserRole; // Par défaut VISITEUR
+  role?: UserRole; // Par défaut VENDEUR
+  isVip?: boolean; // Par défaut false
 };
 
 // DTO pour mise à jour
