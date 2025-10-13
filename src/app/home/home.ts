@@ -7,7 +7,7 @@ import { Router, ActivatedRoute } from '@angular/router';
   selector: 'app-home',
   imports: [CommonModule],
   templateUrl: './home.html',
-  styleUrl: './home.css'
+  styleUrl: './home.css',
 })
 export class Home implements OnInit {
   products: any[] = [];
@@ -28,7 +28,7 @@ export class Home implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       const page = parseInt(params['page'], 10) || 1;
       const limit = parseInt(params['limit'], 10) || 6;
       this.pageSize = limit;
@@ -41,8 +41,9 @@ export class Home implements OnInit {
   }
 
   loadProducts(page: number) {
-    this.productService.getProductsPaginated(page, this.pageSize).subscribe((response) => {
-      this.products = response.data || [];
+    this.productService.getProductsPaginated(page, this.pageSize).subscribe((response: any) => {
+      // Filter only valid products (expired ones are already filtered by backend)
+      this.products = (response.data || []).filter((product: any) => product.status === 'VALIDE');
       this.totalItems = response.count || response.totalItems || response.total || 0;
       this.totalPages = Math.ceil(this.totalItems / this.pageSize);
       this.currentPage = page;
@@ -54,7 +55,7 @@ export class Home implements OnInit {
     if (this.currentPage < this.totalPages) {
       this.router.navigate([], {
         queryParams: { page: this.currentPage + 1, limit: this.pageSize },
-        queryParamsHandling: 'merge'
+        queryParamsHandling: 'merge',
       });
     }
   }
@@ -63,7 +64,7 @@ export class Home implements OnInit {
     if (this.currentPage > 1) {
       this.router.navigate([], {
         queryParams: { page: this.currentPage - 1, limit: this.pageSize },
-        queryParamsHandling: 'merge'
+        queryParamsHandling: 'merge',
       });
     }
   }
@@ -71,7 +72,7 @@ export class Home implements OnInit {
   // Carrousel : initialisation et gestion
   initCarousels() {
     this.clearAllCarousels();
-    this.products.forEach(product => {
+    this.products.forEach((product) => {
       this.carouselIndexes[product.id] = 0;
       this.carouselFade[product.id] = false;
       if (product.images && product.images.length > 1) {
@@ -83,7 +84,7 @@ export class Home implements OnInit {
   }
 
   clearAllCarousels() {
-    Object.values(this.carouselTimers).forEach(timer => clearInterval(timer));
+    Object.values(this.carouselTimers).forEach((timer) => clearInterval(timer));
     this.carouselTimers = {};
     this.carouselIndexes = {};
     this.carouselFade = {};
@@ -120,5 +121,16 @@ export class Home implements OnInit {
 
   carouselFadeOut(product: any): boolean {
     return this.carouselFade[product.id] || false;
+  }
+
+  selectedProduct: any = null;
+
+  voirPlus(product: any) {
+    // Navigate to product detail page instead of showing popup
+    this.router.navigate(['/product', product.id]);
+  }
+
+  fermerPopup() {
+    this.selectedProduct = null;
   }
 }

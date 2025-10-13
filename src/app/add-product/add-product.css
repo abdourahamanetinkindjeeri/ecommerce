@@ -1,0 +1,57 @@
+/* Custom styles for Add Product Component */
+
+/* Ensure smooth transitions for disabled states */
+input[disabled], textarea[disabled], button[disabled] {
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+}
+
+/* Custom dropdown shadow */
+.category-dropdown {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Image preview hover effects */
+.image-preview:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Camera video styling */
+#camera {
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Form focus effects */
+input:focus, textarea:focus {
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
+  border-color: #a855f7;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .grid-cols-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  
+  .max-w-md {
+    max-width: 100%;
+  }
+}
+
+/* Animation for form enable/disable */
+@keyframes formEnable {
+  from {
+    opacity: 0.5;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-enabled {
+  animation: formEnable 0.3s ease-out;
+}

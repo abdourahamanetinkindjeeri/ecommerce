@@ -1,0 +1,74 @@
+/* Dashboard Component Styles */
+
+/* Card hover effects */
+.card {
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Role-specific colors */
+.vendeur-card {
+  border-left: 4px solid #8b5cf6;
+}
+
+.gestionnaire-card {
+  border-left: 4px solid #10b981;
+}
+
+/* Button animations */
+.btn-primary {
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+}
+
+.btn-secondary {
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive grid */
+@media (max-width: 768px) {
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  .md\:col-span-2 {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Role badge */
+.role-badge {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Logout button */
+.logout-btn {
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  transform: scale(1.05);
+  background-color: #dc2626;
+}

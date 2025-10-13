@@ -1,0 +1,196 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 flex items-center justify-center p-4">
+  <div class="relative w-full max-w-2xl z-10">
+    <div class="relative backdrop-blur-2xl bg-white/5 rounded-3xl p-8 shadow-2xl border border-white/10">
+      <div class="relative">
+        <h1 class="text-3xl font-extrabold text-white mb-6 text-center">Ajouter un Produit</h1>
+
+        @if (isLoadingUser) {
+          <div class="text-center text-purple-200">Chargement de l'utilisateur...</div>
+        } @else {
+          <!-- Camera Section -->
+          <div class="mb-8 p-4 bg-white/10 rounded-xl">
+            <h2 class="text-xl font-bold text-white mb-4">Capture d'Images</h2>
+            @if (!isCameraActive) {
+              <button 
+                (click)="addAnotherPhoto()"
+                class="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 hover:scale-105"
+              >
+                📸 Nouveau - Activer la Caméra
+              </button>
+            } @else {
+              <!-- Video Camera -->
+              <div class="relative mb-4">
+                <video 
+                  #camera 
+                  id="camera" 
+                  autoplay 
+                  playsinline 
+                  class="w-full max-w-md mx-auto rounded-lg shadow-lg"
+                  style="aspect-ratio: 16/9;"
+                ></video>
+                <canvas #canvas id="canvas" style="display: none;"></canvas>
+              </div>
+              
+              <!-- Capture Button -->
+              <button 
+                (click)="capturePhoto()"
+                [disabled]="!isCameraReady"
+                class="w-full bg-gradient-to-r from-green-600 to-emerald-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 hover:scale-105 mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                📷 {{ isCameraReady ? 'Capturer la Photo' : 'Caméra en chargement...' }}
+              </button>
+              
+              <button 
+                (click)="stopCamera()"
+                class="w-full bg-gradient-to-r from-red-600 to-rose-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 hover:scale-105"
+              >
+                ⏹️ Arrêter la Caméra
+              </button>
+            }
+          </div>
+
+          <!-- Images Preview -->
+          @if (capturedImages.length > 0) {
+            <div class="mb-8 p-4 bg-white/10 rounded-xl">
+              <h3 class="text-lg font-bold text-white mb-4">Aperçu des Images ({{ capturedImages.length }})</h3>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 overflow-x-auto">
+                @for (image of capturedImages; track $index) {
+                  <div class="relative group">
+                    <img 
+                      [src]="image" 
+                      [alt]="'Image ' + ($index + 1)"
+                      class="w-full h-24 object-cover rounded-lg shadow-lg"
+                    />
+                    <button 
+                      (click)="removeImage($index)"
+                      class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
+                    >
+                      ×
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Form -->
+          <form (ngSubmit)="onSubmit()" class="space-y-6">
+            <!-- Title -->
+            <div>
+              <label class="block text-white font-semibold mb-2">Titre du Produit</label>
+              <input 
+                type="text" 
+                [(ngModel)]="title" 
+                name="title"
+                [disabled]="isFormDisabled"
+                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-purple-200 focus:outline-none focus:border-purple-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                placeholder="Ex: Robe d'été Fleurie - Fatou"
+                [class]="errors.title ? 'border-red-500' : ''"
+              />
+              @if (errors.title) {
+                <p class="text-red-400 text-sm mt-1">{{ errors.title }}</p>
+              }
+            </div>
+
+            <!-- Description -->
+            <div>
+              <label class="block text-white font-semibold mb-2">Description</label>
+              <textarea 
+                [(ngModel)]="description" 
+                name="description"
+                [disabled]="isFormDisabled"
+                rows="3"
+                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-purple-200 focus:outline-none focus:border-purple-400 disabled:opacity-50 disabled:cursor-not-allowed resize-none"
+                placeholder="Ex: Robe légère pour l'été"
+                [class]="errors.description ? 'border-red-500' : ''"
+              ></textarea>
+              @if (errors.description) {
+                <p class="text-red-400 text-sm mt-1">{{ errors.description }}</p>
+              }
+            </div>
+
+            <!-- Price -->
+            <div>
+              <label class="block text-white font-semibold mb-2">Prix (XOF)</label>
+              <input 
+                type="number" 
+                [(ngModel)]="price" 
+                name="price"
+                [disabled]="isFormDisabled"
+                min="0"
+                step="0.01"
+                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-purple-200 focus:outline-none focus:border-purple-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                placeholder="Ex: 45000"
+                [class]="errors.price ? 'border-red-500' : ''"
+              />
+              @if (errors.price) {
+                <p class="text-red-400 text-sm mt-1">{{ errors.price }}</p>
+              }
+            </div>
+
+            <!-- Category -->
+            <div>
+              <label class="block text-white font-semibold mb-2">Catégorie</label>
+              <div class="relative">
+                <input 
+                  type="text" 
+                  [(ngModel)]="categorySearch" 
+                  name="categorySearch"
+                  (input)="filterCategories()"
+                  [disabled]="isFormDisabled"
+                  class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-purple-200 focus:outline-none focus:border-purple-400 disabled:opacity-50 disabled:cursor-not-allowed pr-10"
+                  placeholder="Rechercher et sélectionner une catégorie..."
+                  [class]="errors.category ? 'border-red-500' : ''"
+                />
+                <div class="absolute right-3 top-3 text-purple-300 pointer-events-none">
+                  🔍
+                </div>
+              </div>
+              @if (showCategoryDropdown && !isFormDisabled) {
+                <div class="absolute z-10 w-full mt-1 bg-white/10 border border-white/20 rounded-xl max-h-48 overflow-y-auto">
+                  @for (category of filteredCategories; track category.id) {
+                    <div 
+                      (click)="selectCategory(category)"
+                      class="px-4 py-2 text-white hover:bg-white/20 cursor-pointer rounded-lg"
+                    >
+                      {{ category.libelle }}
+                      @if (category.description) {
+                        <p class="text-sm text-purple-200 opacity-75">{{ category.description }}</p>
+                      }
+                    </div>
+                  }
+                  @if (filteredCategories.length === 0) {
+                    <div class="px-4 py-2 text-purple-300 italic">Aucune catégorie trouvée</div>
+                  }
+                </div>
+              }
+              @if (errors.category) {
+                <p class="text-red-400 text-sm mt-1">{{ errors.category }}</p>
+              }
+            </div>
+
+            @if (errors.images) {
+              <p class="text-red-400 text-sm">{{ errors.images }}</p>
+            }
+            @if (errors.general) {
+              <p class="text-red-400 text-sm">{{ errors.general }}</p>
+            }
+
+            <!-- Submit Button -->
+            <button 
+              type="submit" 
+              [disabled]="isSubmitting || isFormDisabled || capturedImages.length === 0"
+              class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold py-4 px-6 rounded-xl shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              @if (isSubmitting) {
+                <span>⏳ Ajout en cours...</span>
+              } @else {
+                <span>✅ Ajouter le Produit</span>
+              }
+            </button>
+          </form>
+        }
+      </div>
+    </div>
+  </div>
+</div>

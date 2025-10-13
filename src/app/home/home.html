@@ -1,81 +1,219 @@
+<!-- Modal pop-up pour le détail produit -->
+<div
+  *ngIf="selectedProduct"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+>
+  <div class="bg-white rounded-xl p-8 shadow-2xl max-w-md w-full relative">
+    <button
+      (click)="fermerPopup()"
+      class="absolute top-2 right-2 text-purple-600 font-bold text-xl"
+    >
+      &times;
+    </button>
+    <h2 class="text-2xl font-bold mb-2">{{ selectedProduct.title }}</h2>
+    <p class="mb-4">{{ selectedProduct.description }}</p>
+    <div class="mb-2">Vues : {{ selectedProduct.views }}</div>
+    <!-- autres infos produit -->
+  </div>
+</div>
+<div
+  class="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 flex items-center justify-center p-4 relative overflow-hidden"
+>
+  <!-- Animated background orbs -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div
+      class="absolute w-[500px] h-[500px] rounded-full orb orb-1"
+      style="
+        top: -10%;
+        left: -10%;
+        background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%);
+      "
+    ></div>
+    <div
+      class="absolute w-[400px] h-[400px] rounded-full orb orb-2"
+      style="
+        bottom: -10%;
+        right: -10%;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+      "
+    ></div>
+    <div
+      class="absolute w-[300px] h-[300px] rounded-full orb orb-3"
+      style="
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, transparent 70%);
+      "
+    ></div>
+  </div>
 
-<div class="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 flex items-center justify-center p-4 relative overflow-hidden">
-	<!-- Animated background orbs -->
-	<div class="absolute inset-0 overflow-hidden pointer-events-none">
-		<div class="absolute w-[500px] h-[500px] rounded-full orb orb-1" style="top: -10%; left: -10%; background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%)"></div>
-		<div class="absolute w-[400px] h-[400px] rounded-full orb orb-2" style="bottom: -10%; right: -10%; background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)"></div>
-		<div class="absolute w-[300px] h-[300px] rounded-full orb orb-3" style="top: 50%; left: 50%; transform: translate(-50%, -50%); background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, transparent 70%)"></div>
-	</div>
+  <!-- Card centrale vitrine -->
+  <div class="relative w-full max-w-6xl z-10">
+    <div
+      class="relative backdrop-blur-2xl bg-white/5 rounded-3xl p-8 shadow-2xl border border-white/10 transition-transform duration-300"
+    >
+      <div
+        class="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 rounded-3xl pointer-events-none"
+      ></div>
+      <div class="relative">
+        <div class="flex justify-between items-center mb-10">
+          <div class="text-center w-full">
+            <h1 class="text-4xl font-extrabold text-white mb-2 animate-fadeIn">TINKIN</h1>
+            <p class="text-lg text-purple-200 animate-fadeIn">
+              Découvrez nos nouveautés et meilleures offres
+            </p>
+          </div>
+          <div class="absolute top-8 right-8">
+            <a
+              href="/login"
+              class="bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-6 py-2 rounded-xl shadow-lg transition-all duration-300 hover:scale-105 active:scale-95"
+              >S'authentifier</a
+            >
+          </div>
+        </div>
 
-	<!-- Card centrale vitrine -->
-	<div class="relative w-full max-w-6xl z-10">
-		<div class="relative backdrop-blur-2xl bg-white/5 rounded-3xl p-8 shadow-2xl border border-white/10 transition-transform duration-300">
-			<div class="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 rounded-3xl pointer-events-none"></div>
-			<div class="relative">
-						<div class="flex justify-between items-center mb-10">
-							<div class="text-center w-full">
-								<h1 class="text-4xl font-extrabold text-white mb-2 animate-fadeIn">Vitrine des produits</h1>
-								<p class="text-lg text-purple-200 animate-fadeIn">Découvrez nos nouveautés et meilleures offres</p>
-							</div>
-							<div class="absolute top-8 right-8">
-								<a href="/login" class="bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-6 py-2 rounded-xl shadow-lg transition-all duration-300 hover:scale-105 active:scale-95">S'authentifier</a>
-							</div>
-						</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          @for (product of products; track product.id) {
+          <div
+            class="relative bg-white/10 rounded-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 animate-fadeIn"
+            [style.animation-delay]="$index * 120 + 'ms'"
+          >
+            <!-- Badge prix -->
+            <div
+              class="absolute top-4 right-4 bg-purple-600 text-white px-4 py-2 rounded-full text-lg font-bold shadow-lg"
+            >
+              {{ product.price | currency : 'XOF' : 'symbol' : '1.0-0' }}
+            </div>
 
-				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-					@for (product of products; track product.id) {
-						<div class="relative bg-white/10 rounded-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 animate-fadeIn" [style.animation-delay]="($index * 120) + 'ms'">
-							<!-- Badge prix -->
-							<div class="absolute top-4 right-4 bg-purple-600 text-white px-4 py-2 rounded-full text-lg font-bold shadow-lg">
-								{{ product.price | currency:'XOF':'symbol':'1.0-0' }}
-							</div>
+            <!-- Carrousel d'images -->
+            <div class="relative h-64 overflow-hidden rounded-t-xl group">
+              @if (product.images && product.images.length > 0 &&
+              product.images[carouselIndex(product)]?.url) {
+              <img
+                [src]="product.images[carouselIndex(product)].url"
+                class="w-full h-64 object-cover transition-opacity duration-700"
+                [class.opacity-0]="carouselFadeOut(product)"
+                [class.opacity-100]="!carouselFadeOut(product)"
+              />
+              <!-- Flèches navigation -->
+              <button
+                (click)="prevImage(product)"
+                class="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-2 text-purple-600 opacity-0 group-hover:opacity-100 transition duration-200"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  class="w-6 h-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+              <button
+                (click)="nextImage(product)"
+                class="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-2 text-purple-600 opacity-0 group-hover:opacity-100 transition duration-200"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  class="w-6 h-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
+              } @else {
+              <div
+                class="flex items-center justify-center h-full bg-purple-100 text-purple-600 text-2xl font-bold"
+              >
+                Aucune image
+              </div>
+              }
 
-							<!-- Carrousel d'images -->
-							<div class="relative h-64 overflow-hidden rounded-t-xl group">
-												@if (product.images && product.images.length > 0 && product.images[carouselIndex(product)]?.url) {
-													<img [src]="product.images[carouselIndex(product)].url" class="w-full h-64 object-cover transition-opacity duration-700" [class.opacity-0]="carouselFadeOut(product)" [class.opacity-100]="!carouselFadeOut(product)">
-													<!-- Flèches navigation -->
-													<button (click)="prevImage(product)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-2 text-purple-600 opacity-0 group-hover:opacity-100 transition duration-200">
-														<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-													</button>
-													<button (click)="nextImage(product)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-2 text-purple-600 opacity-0 group-hover:opacity-100 transition duration-200">
-														<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-													</button>
-													<!-- Dots indicateurs -->
-													<div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2">
-														@for (img of product.images; track $index) {
-															<span class="w-3 h-3 rounded-full" [ngClass]="{'bg-purple-600': carouselIndex(product) === $index, 'bg-purple-300': carouselIndex(product) !== $index}"></span>
-														}
-													</div>
-												} @else {
-													<div class="flex items-center justify-center h-full bg-purple-100 text-purple-600 text-2xl font-bold">Aucune image</div>
-												}
-							</div>
+            </div>
 
-							<!-- Infos produit -->
-							<div class="p-6">
-								<h2 class="text-xl font-bold text-white mb-2">{{ product.title }}</h2>
-								<p class="text-purple-200 line-clamp-2 mb-4">{{ product.description }}</p>
-								<div class="flex gap-4">
-									<button class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-lg font-semibold shadow hover:scale-105 transition">Voir Plus</button>
-									<button class="border-2 border-purple-600 text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-purple-600 hover:text-white transition">Contacter</button>
-								</div>
-							</div>
-						</div>
-					}
-				</div>
+            <!-- Infos produit -->
+            <div class="p-6">
+              <h2 class="text-xl font-bold text-white mb-2">{{ product.title }}</h2>
+              <p class="text-purple-200 line-clamp-2 mb-4">{{ product.description }}</p>
+              <div class="flex gap-4">
+                <button
+                  class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-lg font-semibold shadow hover:scale-105 transition"
+                  (click)="voirPlus(product)"
+                >
+                  Voir Plus
+                </button>
+                <button
+                  class="border-2 border-purple-600 text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-purple-600 hover:text-white transition"
+                >
+                  Contacter
+                </button>
+              </div>
+            </div>
+          </div>
+          }
+        </div>
 
-				<!-- Pagination -->
-				<div class="flex justify-center items-center mt-10 gap-4">
-					<button (click)="prevPage()" [disabled]="currentPage === 1" class="w-10 h-10 rounded-full bg-white text-purple-600 border-2 border-purple-600 flex items-center justify-center shadow hover:bg-purple-600 hover:text-white transition">
-						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-					</button>
-					<span class="text-white font-semibold text-lg">Page {{ currentPage }} sur {{ totalPages }}</span>
-					<button (click)="nextPage()" [disabled]="currentPage === totalPages" class="w-10 h-10 rounded-full bg-white text-purple-600 border-2 border-purple-600 flex items-center justify-center shadow hover:bg-purple-600 hover:text-white transition">
-						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-					</button>
-				</div>
-			</div>
-		</div>
-	</div>
+        <!-- Pagination -->
+        <div class="flex justify-center items-center mt-10 gap-4">
+          <button
+            (click)="prevPage()"
+            [disabled]="currentPage === 1"
+            class="w-10 h-10 rounded-full bg-white text-purple-600 border-2 border-purple-600 flex items-center justify-center shadow hover:bg-purple-600 hover:text-white transition"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+          <span class="text-white font-semibold text-lg"
+            >Page {{ currentPage }} sur {{ totalPages }}</span
+          >
+          <button
+            (click)="nextPage()"
+            [disabled]="currentPage === totalPages"
+            class="w-10 h-10 rounded-full bg-white text-purple-600 border-2 border-purple-600 flex items-center justify-center shadow hover:bg-purple-600 hover:text-white transition"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

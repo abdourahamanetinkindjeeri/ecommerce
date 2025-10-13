@@ -1,0 +1,97 @@
+/* Approve Products Component Styles */
+
+/* Card hover effects */
+.product-card {
+  transition: all 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+/* Image container */
+.image-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.image-container img {
+  transition: transform 0.3s ease;
+}
+
+.image-container:hover img {
+  transform: scale(1.05);
+}
+
+/* Status badge */
+.status-badge {
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+}
+
+.status-pending {
+  background-color: #f59e0b;
+  color: white;
+}
+
+/* Approve button */
+.approve-btn {
+  transition: all 0.3s ease;
+}
+
+.approve-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+}
+
+/* Loading spinner */
+.loading-spinner {
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid #a855f7;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Empty state */
+.empty-state {
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.empty-state:hover {
+  opacity: 1;
+}
+
+/* Responsive grid */
+@media (max-width: 768px) {
+  .grid-cols-3 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Error message */
+.error-message {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+
+/* Success message */
+.success-message {
+  background-color: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #4ade80;
+}

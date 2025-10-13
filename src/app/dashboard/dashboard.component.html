@@ -1,0 +1,151 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 flex items-center justify-center p-4">
+  <div class="relative w-full max-w-4xl z-10">
+    <div class="relative backdrop-blur-2xl bg-white/5 rounded-3xl p-8 shadow-2xl border border-white/10">
+      <div class="relative">
+        <!-- Header with logout -->
+        <div class="flex justify-between items-center mb-8">
+          <div>
+            <h1 class="text-3xl font-extrabold text-white mb-2">Tableau de Bord</h1>
+            <p class="text-purple-200">Bienvenue, {{ userName }}!</p>
+            <span class="inline-block bg-purple-600 text-white px-3 py-1 rounded-full text-sm mt-2">
+              Rôle: {{ userRole }}
+            </span>
+          </div>
+          <button
+            (click)="logout()"
+            class="bg-red-600 text-white font-semibold px-6 py-2 rounded-xl shadow-lg transition-all duration-300 hover:bg-red-700"
+          >
+            Déconnexion
+          </button>
+        </div>
+
+        <!-- Role-based content -->
+        @if (userRole === 'VENDEUR') {
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white/10 rounded-xl p-6 text-center">
+              <div class="text-4xl mb-4">📦</div>
+              <h2 class="text-xl font-bold text-white mb-2">Gérer Mes Produits</h2>
+              <p class="text-purple-200 mb-4">Ajoutez de nouveaux produits à votre catalogue.</p>
+              <button
+                (click)="navigateToAddProduct()"
+                class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 hover:scale-105"
+              >
+                Ajouter un Produit
+              </button>
+            </div>
+            <div class="bg-white/10 rounded-xl p-6 text-center">
+              <div class="text-4xl mb-4">📊</div>
+              <h2 class="text-xl font-bold text-white mb-2">Mes Statistiques</h2>
+              <p class="text-purple-200 mb-4">Consultez les performances de vos produits.</p>
+              <button class="bg-gray-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 hover:bg-gray-700">
+                Voir les Stats
+              </button>
+            </div>
+          </div>
+
+          <!-- Seller's Products Section -->
+          <div class="mt-8">
+            <h2 class="text-2xl font-bold text-white mb-6">Mes Produits ({{ userProducts.length }})</h2>
+            @if (isLoadingProducts) {
+              <div class="text-center text-purple-200 py-8">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+                <p>Chargement de vos produits...</p>
+              </div>
+            } @else if (userProducts.length === 0) {
+              <div class="text-center text-purple-200 py-8">
+                <div class="text-4xl mb-4">📦</div>
+                <p>Vous n'avez pas encore de produits.</p>
+              </div>
+            } @else {
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @for (product of userProducts; track product.id) {
+                  <div class="bg-white/10 rounded-xl p-6 shadow-lg">
+                    <!-- Product Image -->
+                    @if (product.images && product.images.length > 0) {
+                      <div class="relative h-32 mb-4 overflow-hidden rounded-lg">
+                        <img
+                          [src]="product.images[0].url"
+                          [alt]="product.title"
+                          class="w-full h-full object-cover"
+                        />
+                      </div>
+                    }
+
+                    <!-- Product Info -->
+                    <h3 class="text-lg font-bold text-white mb-2">{{ product.title }}</h3>
+                    <div class="flex justify-between items-center mb-2">
+                      <span class="text-xl font-bold text-green-400">{{ product.price | currency:'XOF':'symbol':'1.0-0' }}</span>
+                      <span
+                        class="px-2 py-1 rounded-full text-xs font-semibold"
+                        [class]="product.status === 'VALIDE' ? 'bg-green-600 text-white' : 'bg-yellow-600 text-white'"
+                      >
+                        {{ product.status === 'VALIDE' ? 'Validé' : 'En Attente' }}
+                      </span>
+                    </div>
+
+                    @if (product.dateExpiration) {
+                      <div class="text-sm text-purple-300 mb-4">
+                        Expire le: {{ product.dateExpiration | date:'dd/MM/yyyy' }}
+                      </div>
+                    }
+
+                    <!-- Renew Button (only for valid products that can be renewed) -->
+                    @if (product.status === 'VALIDE' && canRenew(product)) {
+                      <button
+                        (click)="renewProduct(product.id)"
+                        class="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold py-2 px-4 rounded-lg shadow-lg transition-all duration-300 hover:scale-105 text-sm"
+                      >
+                        🔄 Renouveler (+7 jours)
+                      </button>
+                    } @else if (product.status === 'VALIDE' && !canRenew(product)) {
+                      <div class="text-center text-red-400 text-sm py-2">
+                        Produit expiré
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        } @else if (userRole === 'GESTIONNAIRE') {
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white/10 rounded-xl p-6 text-center">
+              <div class="text-4xl mb-4">✅</div>
+              <h2 class="text-xl font-bold text-white mb-2">Approuver Produits</h2>
+              <p class="text-purple-200 mb-4">Vérifiez et approuvez les nouveaux produits en attente.</p>
+              <button
+                (click)="navigateToApproveProducts()"
+                class="bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 hover:scale-105"
+              >
+                Approuver Produits
+              </button>
+            </div>
+            <div class="bg-white/10 rounded-xl p-6 text-center">
+              <div class="text-4xl mb-4">📂</div>
+              <h2 class="text-xl font-bold text-white mb-2">Gérer Catégories</h2>
+              <p class="text-purple-200 mb-4">Ajoutez et gérez les catégories de produits.</p>
+              <button
+                (click)="navigateToManageCategories()"
+                class="bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 hover:scale-105"
+              >
+                Gérer Catégories
+              </button>
+            </div>
+            <div class="md:col-span-2 bg-white/10 rounded-xl p-6 text-center">
+              <div class="text-4xl mb-4">📈</div>
+              <h2 class="text-xl font-bold text-white mb-2">Statistiques Globales</h2>
+              <p class="text-purple-200 mb-4">Aperçu des produits, utilisateurs et activité.</p>
+              <button class="bg-purple-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 hover:bg-purple-700">
+                Voir le Rapport
+              </button>
+            </div>
+          </div>
+        } @else {
+          <div class="text-center text-purple-200">
+            <p>Rôle non reconnu. Contactez l'administrateur.</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

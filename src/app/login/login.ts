@@ -111,6 +111,7 @@ import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 import { SignupComponent } from '../signup/signup';
 import { UtilisateurService } from '../services/utilisateur';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -176,7 +177,7 @@ export class LoginComponent {
   );
   particlesMessage: string = 'Effet visuel décoratif.';
 
-  constructor(private utilisateurService: UtilisateurService) {}
+  constructor(private utilisateurService: UtilisateurService, private router: Router) {}
 
   // � Gestion des erreurs
   errors: { email?: string; password?: string; general?: string } = {};
@@ -219,7 +220,9 @@ export class LoginComponent {
       next: (res: any) => {
         this.isSubmitting = false;
         this.submitMessage = 'Connexion réussie !';
+        this.utilisateurService.setCurrentUser(res.user);
         console.log('✅ Connexion réussie :', res.user);
+        this.router.navigate(['/dashboard']);
       },
       error: (err: any) => {
         this.isSubmitting = false;
