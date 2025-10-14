@@ -27,7 +27,7 @@ export class ApproveProductsComponent implements OnInit {
   loadPendingProducts() {
     this.productService.getPendingProducts().subscribe({
       next: (res: any) => {
-        this.pendingProducts = res.data || [];
+        this.pendingProducts = (res.data || []).flatMap((cat: any) => cat.products || []);
         this.isLoading = false;
       },
       error: (err) => {
@@ -51,6 +51,7 @@ export class ApproveProductsComponent implements OnInit {
       }
     });
   }
+
 
   goBack() {
     this.router.navigate(['/dashboard']);

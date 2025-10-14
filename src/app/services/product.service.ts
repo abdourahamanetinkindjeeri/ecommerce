@@ -22,7 +22,7 @@ export class ProductService {
   }
 
   getProduct(id: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/${id}`);
+    return this.http.get(`${this.apiUrl}/${id}`, { withCredentials: true });
   }
 
   getCategories(search?: string): Observable<any> {
@@ -60,5 +60,10 @@ export class ProductService {
 
   createCategory(data: any): Observable<any> {
     return this.http.post(this.categoriesUrl, data, { withCredentials: true });
+  }
+
+  getLibelleCategory(id: string): Observable<any> {
+    // Correction : récupération d’une catégorie par id
+    return this.http.get(`${this.categoriesUrl}/${id}`);
   }
 }

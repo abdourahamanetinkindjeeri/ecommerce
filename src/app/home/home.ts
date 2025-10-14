@@ -339,20 +339,67 @@ export class Home implements OnInit, OnDestroy {
   }
 
   // Modal
-  voirPlus(product: any) {
-    this.productService.getProduct(product.id).subscribe({
-      next: (response: any) => {
-        this.selectedProduct = response.data; // Use the updated product from backend with incremented views
-        this.currentImageIndex = 0; // initialiser le carrousel modal
-      },
-      error: (err) => {
-        console.error('Erreur lors de la récupération du produit:', err);
-        // Fallback to cached product if API fails
-        this.selectedProduct = product;
-        this.currentImageIndex = 0;
+  // voirPlus(product: any) {
+  //   this.productService.getProduct(product.id).subscribe({
+  //     next: (response: any) => {
+  //       this.selectedProduct = response.data; 
+  //       console.log(this.selectedProduct)
+  //       this.currentImageIndex = 0; 
+  //     },
+  //     error: (err) => {
+  //       console.error('Erreur lors de la récupération du produit:', err);
+  //       // Fallback to cached product if API fails
+  //       this.selectedProduct = product;
+  //       this.currentImageIndex = 0;
+  //     }
+  //   });
+  // }
+
+  selectedCategoryLabel: string = 'Inconnue';
+
+voirPlus(product: any) {
+  this.productService.getProduct(product.id).subscribe({
+    next: (response: any) => {
+      this.selectedProduct = response.data;
+      this.currentImageIndex = 0;
+
+      if (product.categoryId) {
+        this.productService.getLibelleCategory(product.categoryId).subscribe({
+          next: (res: any) => {
+            this.selectedCategoryLabel = res?.data?.libelle || 'Inconnue';
+          },
+          error: (err) => {
+            console.error('Erreur récupération catégorie', err);
+            this.selectedCategoryLabel = 'Inconnue';
+          }
+        });
+      } else {
+        this.selectedCategoryLabel = 'Inconnue';
       }
-    });
-  }
+    },
+    error: (err) => {
+      console.error('Erreur lors de la récupération du produit:', err);
+      // Fallback to cached product if API fails
+      this.selectedProduct = product;
+      this.currentImageIndex = 0;
+
+      if (product.categoryId) {
+        this.productService.getLibelleCategory(product.categoryId).subscribe({
+          next: (res: any) => {
+            this.selectedCategoryLabel = res?.data?.libelle || 'Inconnue';
+          },
+          error: (err) => {
+            console.error('Erreur récupération catégorie', err);
+            this.selectedCategoryLabel = 'Inconnue';
+          }
+        });
+      } else {
+        this.selectedCategoryLabel = 'Inconnue';
+      }
+    }
+  });
+}
+
 
   fermerPopup() {
     this.selectedProduct = null;
@@ -384,4 +431,6 @@ export class Home implements OnInit, OnDestroy {
     this.currentPage = 1;
     this.loadProducts(1);
   }
+
+  
 }
