@@ -340,8 +340,18 @@ export class Home implements OnInit, OnDestroy {
 
   // Modal
   voirPlus(product: any) {
-    this.selectedProduct = product;
-    this.currentImageIndex = 0; // initialiser le carrousel modal
+    this.productService.getProduct(product.id).subscribe({
+      next: (response: any) => {
+        this.selectedProduct = response.data; // Use the updated product from backend with incremented views
+        this.currentImageIndex = 0; // initialiser le carrousel modal
+      },
+      error: (err) => {
+        console.error('Erreur lors de la récupération du produit:', err);
+        // Fallback to cached product if API fails
+        this.selectedProduct = product;
+        this.currentImageIndex = 0;
+      }
+    });
   }
 
   fermerPopup() {

@@ -31,7 +31,7 @@ export class ProductService {
   }
 
   createProduct(formData: FormData): Observable<any> {
-    return this.http.post(this.apiUrl, formData);
+    return this.http.post(this.apiUrl, formData, { withCredentials: true });
   }
 
   approveProduct(id: string): Observable<any> {
