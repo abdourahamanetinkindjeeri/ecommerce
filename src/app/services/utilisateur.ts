@@ -68,6 +68,11 @@ export class UtilisateurService {
 
   logout() {
     this.currentUser = null;
-    // Clear cookies would be handled by backend call
+    localStorage.removeItem('currentUser');
+    // Clear cookies by calling backend logout
+    this.http.post(`${BASE_URL}auth/logout`, {}, { withCredentials: true }).subscribe({
+      next: () => console.log('Logged out successfully'),
+      error: (err) => console.error('Logout error:', err)
+    });
   }
 }

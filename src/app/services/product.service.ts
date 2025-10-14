@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  private apiUrl = 'http://localhost:5173/api/products';
+  private apiUrl = 'http://localhost:5173/api/products'; // Change to backend port (adjust if different)
   private categoriesUrl = 'http://localhost:5173/api/categories';
 
   constructor(private http: HttpClient) {}
