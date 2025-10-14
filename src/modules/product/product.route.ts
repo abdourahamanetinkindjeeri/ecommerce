@@ -31,7 +31,9 @@ export default function buildProductRoute(controller: ProductController) {
   // Route de création de produit avec upload d'images et validation du prix
   router.post(
     "/",
-    upload.array("images", 10), // max 10 images
+    requireAuth,
+    requireRole('VENDEUR'),
+    upload.array("images", 5), // max 10 images
     uploadProductImagesMiddleware,
     validatePriceMiddleware,
     controller.create.bind(controller)
@@ -42,12 +44,13 @@ export default function buildProductRoute(controller: ProductController) {
   router.get("/:id", controller.getOne.bind(controller));
   router.put(
     "/:id",
+    requireAuth,
     validatePriceMiddleware,
     controller.update.bind(controller)
   );
-  router.post("/:id/approve", controller.approve.bind(controller));
-  router.post("/:id/renew", controller.renew.bind(controller));
-  router.delete("/expired", controller.deleteExpired.bind(controller));
-  router.delete("/:id", controller.delete.bind(controller));
+  router.post("/:id/approve", requireAuth, requireRole('GESTIONNAIRE'), controller.approve.bind(controller));
+  router.post("/:id/renew", requireAuth, requireRole('VENDEUR'), controller.renew.bind(controller));
+  router.delete("/expired", requireAuth, requireRole('GESTIONNAIRE'), controller.deleteExpired.bind(controller));
+  router.delete("/:id", requireAuth, controller.delete.bind(controller));
   return router;
 }

@@ -280,7 +280,11 @@ router.get("/me", async (req, res) => {
 // === LOGOUT ===
 router.post("/logout", (req, res) => {
     clearRefreshTokenCookie(res);
-    res.clearCookie("accessToken");
-    return res.json({ message: "Déconnexion réussie" });
+    res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+    });
+    return res.json({ message: "Déconnexion réussie." });
 });
 export default router;

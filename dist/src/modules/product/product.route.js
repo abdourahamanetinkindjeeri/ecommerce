@@ -1,6 +1,7 @@
 import { Router } from "express";
 import multer from "multer";
 import { uploadProductImagesMiddleware } from "../../middleware/uploadProductImagesMiddleware.js";
+import { requireAuth, requireRole } from "../../middleware/authMiddleware.js";
 export default function buildProductRoute(controller) {
     const router = Router();
     // Middleware de validation pour les prix (s'assurer qu'ils sont positifs)
@@ -19,15 +20,15 @@ export default function buildProductRoute(controller) {
     // Multer configuration pour l'upload des images
     const upload = multer({ dest: "uploads/" });
     // Route de création de produit avec upload d'images et validation du prix
-    router.post("/", upload.array("images", 10), // max 10 images
+    router.post("/", requireAuth, requireRole('VENDEUR'), upload.array("images", 5), // max 10 images
     uploadProductImagesMiddleware, validatePriceMiddleware, controller.create.bind(controller));
     router.get("/", controller.getAll.bind(controller));
     router.get("/status/:status", controller.getByStatus.bind(controller));
     router.get("/:id", controller.getOne.bind(controller));
-    router.put("/:id", validatePriceMiddleware, controller.update.bind(controller));
-    router.post("/:id/approve", controller.approve.bind(controller));
-    router.post("/:id/renew", controller.renew.bind(controller));
-    router.delete("/expired", controller.deleteExpired.bind(controller));
-    router.delete("/:id", controller.delete.bind(controller));
+    router.put("/:id", requireAuth, validatePriceMiddleware, controller.update.bind(controller));
+    router.post("/:id/approve", requireAuth, requireRole('GESTIONNAIRE'), controller.approve.bind(controller));
+    router.post("/:id/renew", requireAuth, requireRole('VENDEUR'), controller.renew.bind(controller));
+    router.delete("/expired", requireAuth, requireRole('GESTIONNAIRE'), controller.deleteExpired.bind(controller));
+    router.delete("/:id", requireAuth, controller.delete.bind(controller));
     return router;
 }

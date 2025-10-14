@@ -257,8 +257,9 @@ export class ProductController extends BaseController {
                 return res.status(404).json({ error: ProductMessages.NOT_FOUND });
             }
             // Vérifier si l'utilisateur connecté est le propriétaire
-            // Assumer que req.user est défini par le middleware d'authentification
+            // req.user est défini par le middleware d'authentification
             const userId = req.user?.id;
+            console.log(`userId : ${userId} et productId : ${product.userId}`);
             if (product.userId !== userId) {
                 return res.status(403).json({ error: ProductMessages.OWNER_ONLY });
             }
