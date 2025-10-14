@@ -13,8 +13,12 @@ export class ProductService {
     return this.http.get(`${this.apiUrl}?page=${page}&limit=${limit}`);
   }
 
-  getProductsPaginated(page: number, limit: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}?page=${page}&limit=${limit}`);
+  getProductsPaginated(page: number, limit: number, search?: string): Observable<any> {
+    let url = `${this.apiUrl}?page=${page}&limit=${limit}`;
+    if (search) {
+      url += `&search=${encodeURIComponent(search)}`;
+    }
+    return this.http.get(url);
   }
 
   getProduct(id: string): Observable<any> {
