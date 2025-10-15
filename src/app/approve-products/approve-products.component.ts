@@ -27,7 +27,7 @@ export class ApproveProductsComponent implements OnInit {
   loadPendingProducts() {
     this.productService.getPendingProducts().subscribe({
       next: (res: any) => {
-        this.pendingProducts = (res.data || []).flatMap((cat: any) => cat.products || []);
+        this.pendingProducts = res.data || [];
         this.isLoading = false;
       },
       error: (err) => {
