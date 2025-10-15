@@ -46,6 +46,7 @@ export default function buildProductRoute(controller: ProductController) {
   router.put(
     "/:id",
     requireAuth,
+    upload.array("images", 5),
     validatePriceMiddleware,
     controller.update.bind(controller)
   );

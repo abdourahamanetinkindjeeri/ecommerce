@@ -148,10 +148,46 @@ export class ProductController extends BaseController {
     update = async (req, res, next) => {
         try {
             const { id } = req.params;
+            // Handle image uploads if provided
+            let imageUrls;
+            if (req.files && Array.isArray(req.files) && req.files.length > 0) {
+                // Process uploaded images
+                const fs = await import("fs/promises");
+                const cloudinary = (await import("cloudinary")).v2;
+                imageUrls = [];
+                for (const file of req.files) {
+                    try {
+                        const result = await cloudinary.uploader.upload(file.path, {
+                            folder: "products",
+                        });
+                        imageUrls.push(result.secure_url);
+                        await fs.unlink(file.path);
+                    }
+                    catch (err) {
+                        console.error("Erreur Cloudinary:", err);
+                        await fs.unlink(file.path).catch(() => { });
+                        return res.status(500).json({ message: "Erreur Cloudinary", error: err });
+                    }
+                }
+            }
             const data = this.updateSchema?.parse(req.body) ?? req.body;
             // Empêche la mise à jour directe du compteur de vues via l'API (optionnel)
             if ("views" in data) {
                 delete data.views;
+            }
+            // Handle image updates if new images provided
+            if (imageUrls && imageUrls.length > 0) {
+                // Delete existing images
+                await prisma.productImage.deleteMany({
+                    where: { productId: id }
+                });
+                // Create new images
+                await Promise.all(imageUrls.map((url) => prisma.productImage.create({
+                    data: {
+                        url,
+                        productId: id,
+                    },
+                })));
             }
             const entity = await this.service.update(id, data);
             if (!entity)

@@ -26,7 +26,7 @@ export default function buildProductRoute(controller) {
     router.get("/status/:status", controller.getByStatus.bind(controller));
     router.get("/user/:userId", requireAuth, controller.getByUser.bind(controller));
     router.get("/:id", controller.getOne.bind(controller));
-    router.put("/:id", requireAuth, validatePriceMiddleware, controller.update.bind(controller));
+    router.put("/:id", requireAuth, upload.array("images", 5), validatePriceMiddleware, controller.update.bind(controller));
     router.post("/:id/approve", requireAuth, requireRole('GESTIONNAIRE'), controller.approve.bind(controller));
     router.post("/:id/reject", requireAuth, requireRole('GESTIONNAIRE'), controller.reject.bind(controller));
     router.post("/:id/renew", requireAuth, requireRole('VENDEUR'), controller.renew.bind(controller));
