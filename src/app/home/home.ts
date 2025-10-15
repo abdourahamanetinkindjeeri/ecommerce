@@ -181,6 +181,8 @@
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ProductService } from '../services/product.service';
+import { UtilisateurService } from '../services/utilisateur';
+import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -216,6 +218,8 @@ export class Home implements OnInit, OnDestroy {
 
   constructor(
     private productService: ProductService,
+    private utilisateurService: UtilisateurService,
+    private toastr: ToastrService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -431,6 +435,34 @@ voirPlus(product: any) {
     this.currentPage = 1;
     this.loadProducts(1);
   }
+
+  contactSeller(product: any) {
+    if (!product || !product.userId) {
+      this.toastr.error('Produit invalide');
+      return;
+    }
+
+    this.utilisateurService.getUserById(product.userId).subscribe({
+      next: (response: any) => {
+        const user = response.data || response;
+        if (user && user.telephone) {
+          // Nettoyer le numéro de téléphone (retirer espaces, tirets, etc.)
+          const phone = user.telephone.replace(/[^0-9+]/g, '');
+          const whatsappUrl = `https://wa.me/${phone}`;
+          window.open(whatsappUrl, '_blank');
+          this.toastr.success('Redirection vers WhatsApp...');
+        } else {
+          this.toastr.error('Numéro de téléphone non disponible pour ce vendeur.');
+        }
+      },
+      error: (err) => {
+        console.error('Erreur lors de la récupération de l\'utilisateur:', err);
+        this.toastr.error('Erreur lors de la récupération des informations du vendeur.');
+      }
+    });
+  }
+
+  
 
   
 }

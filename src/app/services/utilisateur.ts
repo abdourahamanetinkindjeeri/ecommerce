@@ -75,4 +75,11 @@ export class UtilisateurService {
       error: (err) => console.error('Logout error:', err)
     });
   }
+
+  /**
+   * 👤 Récupérer un utilisateur par ID
+   */
+  getUserById(id: string): Observable<any> {
+    return this.http.get(`${BASE_URL}users/${id}`, { withCredentials: true });
+  }
 }

@@ -108,6 +108,7 @@
       <div class="w-full">
         <button
           class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition-all duration-300"
+          (click)="contactSeller(selectedProduct)"
         >
           Contacter
         </button>
@@ -288,6 +289,7 @@
                 </button>
                 <button
                   class="border-2 border-purple-600 text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-purple-600 hover:text-white transition"
+                  (click)="contactSeller(product)"
                 >
                   Contacter
                 </button>
