@@ -89,4 +89,6 @@ export class UserController extends BaseController<
   protected getNotFoundMessage(): string {
     return UserMessages.NOT_FOUND;
   }
+
+  // toggleVip method removed as isVip is no longer on User model
 }

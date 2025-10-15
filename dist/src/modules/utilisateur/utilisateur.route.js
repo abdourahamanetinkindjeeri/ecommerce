@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { hashPassword } from "./auth/hashPassword.js";
-import validateUserUniqueness from "./middleware/validateUserUniqueness.js";
+import { validateUserUniqueness } from "./middleware/validateUserUniqueness.js";
 export default function buildUtilisateurRoute(controller) {
     const router = Router();
     // Middleware pour hasher le mot de passe

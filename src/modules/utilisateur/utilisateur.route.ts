@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { hashPassword } from "./auth/hashPassword.js";
 import { UserController } from "./utilisateur.controller.js";
-import validateUserUniqueness from "./middleware/validateUserUniqueness.js";
+import { validateUserUniqueness } from "./middleware/validateUserUniqueness.js";
 
 export default function buildUtilisateurRoute(controller: UserController) {
   const router = Router();
@@ -40,5 +40,6 @@ export default function buildUtilisateurRoute(controller: UserController) {
     controller.update.bind(controller)
   );
   router.delete("/:id", controller.delete.bind(controller));
+
   return router;
 }

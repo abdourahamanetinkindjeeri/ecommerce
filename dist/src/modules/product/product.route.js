@@ -20,10 +20,11 @@ export default function buildProductRoute(controller) {
     // Multer configuration pour l'upload des images
     const upload = multer({ dest: "uploads/" });
     // Route de création de produit avec upload d'images et validation du prix
-    router.post("/", requireAuth, requireRole('VENDEUR'), upload.array("images", 5), // max 10 images
+    router.post("/", requireAuth, requireRole('VENDEUR'), upload.array("images", 5), // max 5 images
     uploadProductImagesMiddleware, validatePriceMiddleware, controller.create.bind(controller));
     router.get("/", controller.getAll.bind(controller));
     router.get("/status/:status", controller.getByStatus.bind(controller));
+    router.get("/user/:userId", requireAuth, controller.getByUser.bind(controller));
     router.get("/:id", controller.getOne.bind(controller));
     router.put("/:id", requireAuth, validatePriceMiddleware, controller.update.bind(controller));
     router.post("/:id/approve", requireAuth, requireRole('GESTIONNAIRE'), controller.approve.bind(controller));

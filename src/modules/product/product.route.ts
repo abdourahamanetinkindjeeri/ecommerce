@@ -33,7 +33,7 @@ export default function buildProductRoute(controller: ProductController) {
     "/",
     requireAuth,
     requireRole('VENDEUR'),
-    upload.array("images", 5), // max 10 images
+    upload.array("images", 5), // max 5 images
     uploadProductImagesMiddleware,
     validatePriceMiddleware,
     controller.create.bind(controller)
@@ -41,6 +41,7 @@ export default function buildProductRoute(controller: ProductController) {
 
   router.get("/", controller.getAll.bind(controller));
   router.get("/status/:status", controller.getByStatus.bind(controller));
+  router.get("/user/:userId", requireAuth, controller.getByUser.bind(controller));
   router.get("/:id", controller.getOne.bind(controller));
   router.put(
     "/:id",

@@ -18,6 +18,7 @@ const ProductBaseSchema = {
     userId: z.string().uuid(ProductMessages.USER_REQUIRED),
     categoryId: z.string().uuid(ProductMessages.CATEGORY_REQUIRED),
     views: z.number().positive().optional(),
+    isVip: z.boolean().optional(),
 };
 export class ProductController extends BaseController {
     service;
@@ -88,7 +89,7 @@ export class ProductController extends BaseController {
                         ]
                     },
                     orderBy: [
-                        { user: { isVip: 'desc' } },
+                        { isVip: 'desc' },
                         { createdAt: 'desc' }
                     ],
                     include: { images: true, category: true, user: true },
@@ -163,68 +164,6 @@ export class ProductController extends BaseController {
             next(err);
         }
     };
-    // getByStatus = async (req: Request, res: Response, next: NextFunction) => {
-    //   try {
-    //     const { status } = req.params;
-    //     if (!['VALIDE', 'EN_ATTENTE'].includes(status)) {
-    //       return res.status(400).json({ error: 'Statut invalide. Utilisez VALIDE ou EN_ATTENTE.' });
-    //     }
-    //     const page = parseInt(req.query.page as string) || 1;
-    //     const limit = parseInt(req.query.limit as string) || 10;
-    //     const skip = (page - 1) * limit;
-    //     const search = (req.query.search as string) || undefined;
-    //     const [entities, total] = await Promise.all([
-    //       prisma.product.findMany({
-    //         skip,
-    //         take: limit,
-    //         where: {
-    //           AND: [
-    //             { status: status as ProductStatus },
-    //             search
-    //               ? { title: { contains: search, mode: "insensitive" } }
-    //               : {},
-    //             {
-    //               OR: [
-    //                 { dateExpiration: null },
-    //                 { dateExpiration: { gt: new Date() } }
-    //               ]
-    //             }
-    //           ]
-    //         },
-    //         orderBy: [
-    //           { user: { isVip: 'desc' } },
-    //           { createdAt: 'desc' }
-    //         ],
-    //         include: { images: true, category: true, user: true },
-    //       }),
-    //       prisma.product.count({
-    //         where: {
-    //           AND: [
-    //             { status: status as ProductStatus },
-    //             search
-    //               ? { title: { contains: search, mode: "insensitive" } }
-    //               : {},
-    //             {
-    //               OR: [
-    //                 { dateExpiration: null },
-    //                 { dateExpiration: { gt: new Date() } }
-    //               ]
-    //             }
-    //           ]
-    //         },
-    //       })
-    //     ]);
-    //     res.status(200).json({
-    //       page,
-    //       limit,
-    //       count: total,
-    //       data: entities,
-    //       message: `Produits ${status} récupérés avec succès`,
-    //     });
-    //   } catch (err) {
-    //     next(err);
-    //   }
-    // };
     getByStatus = async (req, res, next) => {
         try {
             const { status } = req.params;
@@ -235,52 +174,53 @@ export class ProductController extends BaseController {
             const limit = parseInt(req.query.limit) || 10;
             const skip = (page - 1) * limit;
             const search = req.query.search || undefined;
-            const categoryId = req.query.categoryId;
-            // Préparer le filtre
-            const whereClause = {
-                AND: [
-                    { status: status },
-                    search ? { title: { contains: search, mode: "insensitive" } } : {},
-                    categoryId ? { categoryId } : {},
-                    { OR: [{ dateExpiration: null }, { dateExpiration: { gt: new Date() } }] }
-                ]
-            };
-            // Récupérer tous les produits correspondant
-            const products = await prisma.product.findMany({
-                skip,
-                take: limit,
-                where: whereClause,
-                orderBy: [
-                    { user: { isVip: 'desc' } },
-                    { createdAt: 'desc' }
-                ],
-                include: {
-                    images: true,
-                    category: true,
-                    user: true,
-                }
-            });
-            // Compter le total
-            const total = await prisma.product.count({ where: whereClause });
-            // Grouper par catégorie
-            const grouped = products.reduce((acc, product) => {
-                const catId = product.category?.id || 'uncategorized';
-                if (!acc[catId]) {
-                    acc[catId] = {
-                        category: product.categoryId || { id: 'uncategorized', name: 'Sans catégorie' },
-                        products: [],
-                    };
-                }
-                acc[catId].products.push(product);
-                return acc;
-            }, {});
-            const data = Object.values(grouped);
+            const [entities, total] = await Promise.all([
+                prisma.product.findMany({
+                    skip,
+                    take: limit,
+                    where: {
+                        AND: [
+                            { status: status },
+                            search
+                                ? { title: { contains: search, mode: "insensitive" } }
+                                : {},
+                            {
+                                OR: [
+                                    { dateExpiration: null },
+                                    { dateExpiration: { gt: new Date() } }
+                                ]
+                            }
+                        ]
+                    },
+                    orderBy: [
+                        { isVip: 'desc' },
+                        { createdAt: 'desc' }
+                    ],
+                    include: { images: true, category: true, user: true },
+                }),
+                prisma.product.count({
+                    where: {
+                        AND: [
+                            { status: status },
+                            search
+                                ? { title: { contains: search, mode: "insensitive" } }
+                                : {},
+                            {
+                                OR: [
+                                    { dateExpiration: null },
+                                    { dateExpiration: { gt: new Date() } }
+                                ]
+                            }
+                        ]
+                    },
+                })
+            ]);
             res.status(200).json({
                 page,
                 limit,
                 count: total,
-                data,
-                message: `Produits ${status} récupérés et regroupés par catégorie avec succès`,
+                data: entities,
+                message: `Produits ${status} récupérés avec succès`,
             });
         }
         catch (err) {
@@ -353,6 +293,69 @@ export class ProductController extends BaseController {
             res.status(200).json({
                 message: `${deleted.count} produit(s) expiré(s) supprimé(s)`,
                 count: deleted.count
+            });
+        }
+        catch (err) {
+            next(err);
+        }
+    };
+    getByUser = async (req, res, next) => {
+        try {
+            const { userId } = req.params;
+            const requestingUserId = req.user?.id;
+            const requestingUserRole = req.user?.role;
+            // Check if the requesting user is the owner or has GESTIONNAIRE role
+            if (requestingUserId !== userId && requestingUserRole !== 'GESTIONNAIRE') {
+                return res.status(403).json({ error: 'Accès non autorisé. Vous ne pouvez voir que vos propres produits.' });
+            }
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 10;
+            const skip = (page - 1) * limit;
+            const search = req.query.search || undefined;
+            const [entities, total] = await Promise.all([
+                prisma.product.findMany({
+                    skip,
+                    take: limit,
+                    where: {
+                        AND: [
+                            { userId },
+                            search
+                                ? { title: { contains: search, mode: "insensitive" } }
+                                : {},
+                            {
+                                OR: [
+                                    { dateExpiration: null },
+                                    { dateExpiration: { gt: new Date() } }
+                                ]
+                            }
+                        ]
+                    },
+                    orderBy: { createdAt: 'desc' },
+                    include: { images: true, category: true, user: true },
+                }),
+                prisma.product.count({
+                    where: {
+                        AND: [
+                            { userId },
+                            search
+                                ? { title: { contains: search, mode: "insensitive" } }
+                                : {},
+                            {
+                                OR: [
+                                    { dateExpiration: null },
+                                    { dateExpiration: { gt: new Date() } }
+                                ]
+                            }
+                        ]
+                    },
+                })
+            ]);
+            res.status(200).json({
+                page,
+                limit,
+                count: total,
+                data: entities,
+                message: 'Produits de l\'utilisateur récupérés avec succès',
             });
         }
         catch (err) {

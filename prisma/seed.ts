@@ -276,7 +276,16 @@ async function main() {
             dateExpiration: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 jours
             userId: vendeur.id,
             categoryId: categories[produitData.category].id,
-            imageUrl: `https://api.dicebear.com/7.x/shapes/svg?seed=${produitData.title}`,
+            images: {
+              create: [
+                {
+                  url: `https://picsum.photos/400/300?random=${Math.floor(Math.random() * 1000)}`,
+                },
+                {
+                  url: `https://picsum.photos/400/300?random=${Math.floor(Math.random() * 1000) + 1}`,
+                },
+              ],
+            },
           },
         });
 

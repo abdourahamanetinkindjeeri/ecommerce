@@ -27,7 +27,6 @@ model User {
   telephone String   @unique
   adresse   String
   role      UserRole @default(VENDEUR)
-  isVip     Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -45,6 +44,7 @@ model Product {
   images         ProductImage[]
   status         ProductStatus @default(EN_ATTENTE)
   dateExpiration DateTime?
+  isVip          Boolean       @default(false)
   createdAt DateTime @default(now())
   updatedAt      DateTime      @updatedAt
   views          Int           @default(0)
