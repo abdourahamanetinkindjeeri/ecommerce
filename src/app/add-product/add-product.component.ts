@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ProductService } from '../services/product.service';
 import { UtilisateurService } from '../services/utilisateur';
 import { Router, ActivatedRoute } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-add-product',
@@ -49,7 +50,8 @@ export class AddProductComponent implements OnInit, OnDestroy {
     private productService: ProductService,
     private utilisateurService: UtilisateurService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit() {
@@ -177,7 +179,7 @@ export class AddProductComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Erreur chargement produit:', err);
-        alert('Erreur lors du chargement du produit à modifier.');
+        this.toastr.error('Erreur lors du chargement du produit à modifier.');
         this.router.navigate(['/dashboard']);
       },
     });
@@ -264,7 +266,7 @@ export class AddProductComponent implements OnInit, OnDestroy {
     serviceCall.subscribe({
       next: () => {
         this.isSubmitting = false;
-        alert(`✅ Produit ${this.isEditMode ? 'modifié' : 'ajouté'} avec succès !`);
+        this.toastr.success(`Produit ${this.isEditMode ? 'modifié' : 'ajouté'} avec succès !`);
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {

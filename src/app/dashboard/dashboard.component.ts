@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { UtilisateurService } from '../services/utilisateur';
 import { ProductService } from '../services/product.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,7 +21,8 @@ export class DashboardComponent implements OnInit {
   constructor(
     private utilisateurService: UtilisateurService,
     private productService: ProductService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit() {
@@ -60,12 +62,12 @@ export class DashboardComponent implements OnInit {
     this.productService.renewProduct(productId).subscribe({
       next: (response: any) => {
         console.log('Product renewed:', response);
-        alert('Produit renouvelé avec succès!');
+        this.toastr.success('Produit renouvelé avec succès!');
         this.loadUserProducts(); // Refresh list
       },
       error: (err) => {
         console.error('Error renewing product:', err);
-        alert('Erreur lors du renouvellement du produit.');
+        this.toastr.error('Erreur lors du renouvellement du produit.');
       }
     });
   }

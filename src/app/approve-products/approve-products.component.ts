@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductService } from '../services/product.service';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-approve-products',
@@ -17,7 +18,8 @@ export class ApproveProductsComponent implements OnInit {
 
   constructor(
     private productService: ProductService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit() {
@@ -43,11 +45,11 @@ export class ApproveProductsComponent implements OnInit {
       next: (res: any) => {
         console.log('Product approved:', res);
         this.loadPendingProducts(); // Refresh list
-        alert('Produit approuvé avec succès!');
+        this.toastr.success('Produit approuvé avec succès!');
       },
       error: (err) => {
         console.error('Error approving product:', err);
-        alert('Erreur lors de l\'approbation du produit.');
+        this.toastr.error('Erreur lors de l\'approbation du produit.');
       }
     });
   }
@@ -57,11 +59,11 @@ export class ApproveProductsComponent implements OnInit {
       next: (res: any) => {
         console.log('Product rejected:', res);
         this.loadPendingProducts(); // Refresh list
-        alert('Produit rejeté avec succès!');
+        this.toastr.success('Produit rejeté avec succès!');
       },
       error: (err) => {
         console.error('Error rejecting product:', err);
-        alert('Erreur lors du rejet du produit.');
+        this.toastr.error('Erreur lors du rejet du produit.');
       }
     });
   }

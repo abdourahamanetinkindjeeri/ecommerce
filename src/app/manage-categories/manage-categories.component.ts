@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../services/product.service';
+import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 
 @Component({
@@ -25,7 +26,8 @@ export class ManageCategoriesComponent implements OnInit {
 
   constructor(
     private productService: ProductService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit() {
@@ -48,7 +50,7 @@ export class ManageCategoriesComponent implements OnInit {
 
   addCategory() {
     if (!this.newCategory.libelle.trim()) {
-      alert('Le nom de la catégorie est requis.');
+      this.toastr.error('Le nom de la catégorie est requis.');
       return;
     }
 
@@ -58,12 +60,12 @@ export class ManageCategoriesComponent implements OnInit {
         console.log('Category created:', res);
         this.newCategory = { libelle: '', description: '' };
         this.loadCategories(); // Refresh list
-        alert('Catégorie ajoutée avec succès!');
+        this.toastr.success('Catégorie ajoutée avec succès!');
         this.isSubmitting = false;
       },
       error: (err) => {
         console.error('Error creating category:', err);
-        alert('Erreur lors de l\'ajout de la catégorie.');
+        this.toastr.error('Erreur lors de l\'ajout de la catégorie.');
         this.isSubmitting = false;
       }
     });

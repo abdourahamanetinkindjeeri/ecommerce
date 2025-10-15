@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, style, transition, animate, query, stagger } from '@angular/animations';
 import { UtilisateurService } from '../services/utilisateur';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-signup',
@@ -86,7 +87,7 @@ export class SignupComponent {
     adresse?: string;
   } = {};
 
-  constructor(private utilisateurService: UtilisateurService) {
+  constructor(private utilisateurService: UtilisateurService, private toastr: ToastrService) {
     for (let i = 0; i < 20; i++) {
       this.particles.push({
         left: `${Math.random() * 100}%`,
@@ -142,7 +143,7 @@ export class SignupComponent {
       hasError = true;
     }
     if (!this.acceptTerms) {
-      alert("Veuillez accepter les conditions d'utilisation");
+      this.toastr.error("Veuillez accepter les conditions d'utilisation");
       return;
     }
     if (hasError) {
@@ -160,7 +161,7 @@ export class SignupComponent {
       .subscribe({
         next: () => {
           this.isSubmitting = false;
-          alert('✅ Compte créé avec succès !');
+          this.toastr.success('Compte créé avec succès !');
           // Reset form
           this.name = '';
           this.email = '';
@@ -173,15 +174,15 @@ export class SignupComponent {
         },
         error: (err) => {
           this.isSubmitting = false;
-          alert(err?.error?.message || "Erreur lors de l'inscription.");
+          this.toastr.error(err?.error?.message || "Erreur lors de l'inscription.");
         },
       });
   }
 
   signupWithGoogle() {
-    alert('🔗 Connexion via Google en cours...');
+    this.toastr.info('Connexion via Google en cours...');
   }
   signupWithGithub() {
-    alert('🔗 Connexion via GitHub en cours...');
+    this.toastr.info('Connexion via GitHub en cours...');
   }
 }
