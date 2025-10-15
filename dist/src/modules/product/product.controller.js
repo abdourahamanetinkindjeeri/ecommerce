@@ -246,6 +246,31 @@ export class ProductController extends BaseController {
             next(err);
         }
     };
+    reject = async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            const entity = await this.service.update(id, {
+                status: 'REJETE'
+            });
+            if (!entity)
+                return res.status(404).json({ error: ProductMessages.NOT_FOUND });
+            // Create notification for the seller
+            await prisma.notification.create({
+                data: {
+                    message: `Votre produit "${entity.title}" a été rejeté par un gestionnaire.`,
+                    type: 'REJECTION',
+                    userId: entity.userId,
+                    productId: entity.id,
+                },
+            });
+            res
+                .status(200)
+                .json({ data: entity, message: 'Produit rejeté avec succès' });
+        }
+        catch (err) {
+            next(err);
+        }
+    };
     renew = async (req, res, next) => {
         try {
             const { id } = req.params;
