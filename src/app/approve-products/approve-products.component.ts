@@ -27,47 +27,34 @@ export class ApproveProductsComponent implements OnInit {
   }
 
   loadPendingProducts() {
-    this.productService.getPendingProducts().subscribe({
+    this.productService.getProductsByStatus('VALIDE').subscribe({
       next: (res: any) => {
         this.pendingProducts = res.data || [];
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Error loading pending products:', err);
-        this.error = 'Erreur lors du chargement des produits en attente.';
+        console.error('Error loading approved products:', err);
+        this.error = 'Erreur lors du chargement des produits approuvés.';
         this.isLoading = false;
       }
     });
   }
 
-  approveProduct(id: string) {
-    this.productService.approveProduct(id).subscribe({
+
+
+  toggleVip(id: string) {
+    this.productService.toggleVip(id).subscribe({
       next: (res: any) => {
-        console.log('Product approved:', res);
+        console.log('VIP toggled:', res);
         this.loadPendingProducts(); // Refresh list
-        this.toastr.success('Produit approuvé avec succès!');
+        this.toastr.success(res.message);
       },
       error: (err) => {
-        console.error('Error approving product:', err);
-        this.toastr.error('Erreur lors de l\'approbation du produit.');
+        console.error('Error toggling VIP:', err);
+        this.toastr.error('Erreur lors du changement du statut VIP.');
       }
     });
   }
-
-  rejectProduct(id: string) {
-    this.productService.rejectProduct(id).subscribe({
-      next: (res: any) => {
-        console.log('Product rejected:', res);
-        this.loadPendingProducts(); // Refresh list
-        this.toastr.success('Produit rejeté avec succès!');
-      },
-      error: (err) => {
-        console.error('Error rejecting product:', err);
-        this.toastr.error('Erreur lors du rejet du produit.');
-      }
-    });
-  }
-
 
   goBack() {
     this.router.navigate(['/dashboard']);

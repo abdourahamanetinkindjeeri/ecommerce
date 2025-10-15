@@ -74,4 +74,8 @@ export class ProductService {
     // Correction : récupération d’une catégorie par id
     return this.http.get(`${this.categoriesUrl}/${id}`);
   }
+
+  toggleVip(id: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/toggle-vip`, {}, { withCredentials: true });
+  }
 }

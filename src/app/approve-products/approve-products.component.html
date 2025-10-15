@@ -5,10 +5,10 @@
         <!-- Header -->
         <div class="flex justify-between items-center mb-8">
           <div>
-            <h1 class="text-3xl font-extrabold text-white mb-2">Approuver les Produits</h1>
-            <p class="text-purple-200">Produits en attente d'approbation ({{ pendingProducts.length }})</p>
+            <h1 class="text-3xl font-extrabold text-white mb-2">Gérer les Produits VIP</h1>
+            <p class="text-purple-200">Produits approuvés - Marquer comme VIP ({{ pendingProducts.length }})</p>
           </div>
-          <button 
+          <button
             (click)="goBack()"
             class="bg-gray-600 text-white font-semibold px-6 py-2 rounded-xl shadow-lg transition-all duration-300 hover:bg-gray-700"
           >
@@ -23,7 +23,7 @@
           </div>
         } @else if (error) {
           <div class="text-center text-red-400 py-12">
-            <p class="text-lg mb-4">❌ {{ error }}</p>
+            <p class="text-lg mb-4"> {{ error }}</p>
             <button 
               (click)="loadPendingProducts()"
               class="bg-purple-600 text-white font-semibold px-6 py-2 rounded-xl shadow-lg transition-all duration-300 hover:bg-purple-700"
@@ -33,9 +33,9 @@
           </div>
         } @else if (pendingProducts.length === 0) {
           <div class="text-center text-purple-200 py-12">
-            <div class="text-6xl mb-4">✅</div>
-            <h2 class="text-2xl font-bold mb-2">Aucun produit en attente</h2>
-            <p>Tous les produits ont été approuvés ou il n'y a pas de nouvelles soumissions.</p>
+            <div class="text-6xl mb-4">⭐</div>
+            <h2 class="text-2xl font-bold mb-2">Aucun produit approuvé</h2>
+            <p>Il n'y a pas de produits approuvés à gérer pour le moment.</p>
           </div>
         } @else {
           <!-- Products List -->
@@ -67,30 +67,22 @@
                 <p class="text-purple-200 mb-2 line-clamp-2">{{ product.description }}</p>
                 <div class="flex justify-between items-center mb-4">
                   <span class="text-2xl font-bold text-green-400">{{ product.price | currency:'XOF':'symbol':'1.0-0' }}</span>
-                  <span class="bg-yellow-600 text-white px-3 py-1 rounded-full text-sm">
-                    En Attente
+                  <span class="bg-green-600 text-white px-3 py-1 rounded-full text-sm">
+                    Approuvé
                   </span>
                 </div>
                 <div class="text-sm text-purple-300 mb-4">
                   Vendeur: {{ product.user?.name || 'Utilisateur inconnu' }}<br>
-                                    <!-- Catégorie: {{ product.category?.libelle || 'Non catégorisé' }} -->
-
-                  getLibelleCategory
+                  Statut: {{ product.isVip ? 'VIP' : 'Standard' }}
                 </div>
 
                 <!-- Action Buttons -->
                 <div class="flex gap-2">
                   <button
-                    (click)="approveProduct(product.id)"
-                    class="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold py-3 px-4 rounded-xl shadow-lg transition-all duration-300 hover:scale-105"
+                    (click)="toggleVip(product.id)"
+                    [class]="product.isVip ? 'flex-1 bg-gradient-to-r from-yellow-600 to-orange-600 text-white font-semibold py-3 px-4 rounded-xl shadow-lg transition-all duration-300 hover:scale-105' : 'flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold py-3 px-4 rounded-xl shadow-lg transition-all duration-300 hover:scale-105'"
                   >
-                    ✅ Approuver
-                  </button>
-                  <button
-                    (click)="rejectProduct(product.id)"
-                    class="flex-1 bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg transition-all duration-300 hover:scale-105"
-                  >
-                    ❌ Rejeter
+                    {{ product.isVip ? '⭐ Retirer VIP' : '⭐ Marquer VIP' }}
                   </button>
                 </div>
               </div>

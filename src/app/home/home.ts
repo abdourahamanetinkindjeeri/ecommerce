@@ -436,33 +436,74 @@ voirPlus(product: any) {
     this.loadProducts(1);
   }
 
-  contactSeller(product: any) {
-    if (!product || !product.userId) {
-      this.toastr.error('Produit invalide');
-      return;
-    }
+  // contactSeller(product: any) {
+  //   if (!product || !product.userId) {
+  //     this.toastr.error('Produit invalide');
+  //     return;
+  //   }
 
-    this.utilisateurService.getUserById(product.userId).subscribe({
-      next: (response: any) => {
-        const user = response.data || response;
-        if (user && user.telephone) {
-          // Nettoyer le numéro de téléphone (retirer espaces, tirets, etc.)
-          const phone = user.telephone.replace(/[^0-9+]/g, '');
-          const whatsappUrl = `https://wa.me/${phone}`;
-          window.open(whatsappUrl, '_blank');
-          this.toastr.success('Redirection vers WhatsApp...');
-        } else {
-          this.toastr.error('Numéro de téléphone non disponible pour ce vendeur.');
-        }
-      },
-      error: (err) => {
-        console.error('Erreur lors de la récupération de l\'utilisateur:', err);
-        this.toastr.error('Erreur lors de la récupération des informations du vendeur.');
-      }
-    });
+  //   this.utilisateurService.getUserById(product.userId).subscribe({
+  //     next: (response: any) => {
+  //       const user = response.data || response;
+  //       if (user && user.telephone) {
+  //         // Nettoyer le numéro de téléphone (retirer espaces, tirets, etc.)
+  //         const phone = user.telephone.replace(/[^0-9+]/g, '');
+  //         const whatsappUrl = `https://wa.me/${phone}`;
+  //         window.open(whatsappUrl, '_blank');
+  //         this.toastr.success('Redirection vers WhatsApp...');
+  //       } else {
+  //         this.toastr.error('Numéro de téléphone non disponible pour ce vendeur.');
+  //       }
+  //     },
+  //     error: (err) => {
+  //       console.error('Erreur lors de la récupération de l\'utilisateur:', err);
+  //       this.toastr.error('Erreur lors de la récupération des informations du vendeur.');
+  //     }
+  //   });
+  // }
+
+  
+
+  contactSeller(product: any) {
+  if (!product || !product.userId) {
+    this.toastr.error('Produit invalide');
+    return;
   }
 
-  
+  this.utilisateurService.getUserById(product.userId).subscribe({
+    next: (response: any) => {
+      const user = response.data || response;
 
-  
+      if (user && user.telephone) {
+        // Nettoyer le numéro
+        const phone = user.telephone.replace(/[^0-9+]/g, '');
+
+        // Créer un message automatique avec le produit
+        const message = `Bonjour ${user.name || 'cher vendeur'},\n` +
+          `Je suis intéressé(e) par votre produit : *${product.title}*.\n` +
+          `${product.description ? '\nDescription : ' + product.description : ''}\n` +
+          `${product.price ? '\nPrix : ' + product.price + ' FCFA' : ''}\n\n` +
+          `Pouvez-vous m’en dire plus ? 😊`;
+
+        // Encoder le message pour l’URL WhatsApp
+        const encodedMessage = encodeURIComponent(message);
+
+        // Construire l’URL WhatsApp
+        const whatsappUrl = `https://wa.me/${phone}?text=${encodedMessage}`;
+
+        // Ouvrir WhatsApp
+        window.open(whatsappUrl, '_blank');
+
+        this.toastr.success('Redirection vers WhatsApp...');
+      } else {
+        this.toastr.error('Numéro de téléphone non disponible pour ce vendeur.');
+      }
+    },
+    error: (err) => {
+      console.error("Erreur lors de la récupération de l'utilisateur:", err);
+      this.toastr.error('Erreur lors de la récupération des informations du vendeur.');
+    }
+  });
+}
+
 }
