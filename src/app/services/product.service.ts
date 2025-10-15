@@ -38,8 +38,16 @@ export class ProductService {
     return this.http.post(`${this.apiUrl}/${id}/approve`, {}, { withCredentials: true });
   }
 
+  rejectProduct(id: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/reject`, {}, { withCredentials: true });
+  }
+
   renewProduct(id: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/${id}/renew`, {}, { withCredentials: true });
+  }
+
+  updateProduct(id: string, formData: FormData): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, formData, { withCredentials: true });
   }
 
   getProductsByStatus(status: string, page: number = 1, limit: number = 10, search?: string): Observable<any> {

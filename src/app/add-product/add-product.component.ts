@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../services/product.service';
 import { UtilisateurService } from '../services/utilisateur';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-add-product',
@@ -25,7 +25,7 @@ export class AddProductComponent implements OnInit, OnDestroy {
   capturedFiles: File[] = [];
   isFormDisabled = true;
 
-  // Catégories
+    // Catégories
   categories: any[] = [];
   filteredCategories: any[] = [];
   categorySearch = '';
@@ -35,6 +35,8 @@ export class AddProductComponent implements OnInit, OnDestroy {
   isSubmitting = false;
   errors: any = {};
   isLoadingUser = true;
+  isEditMode = false;
+  editProductId = '';
 
   // Caméra
   @ViewChild('camera', { static: false }) camera!: ElementRef<HTMLVideoElement>;
@@ -46,10 +48,18 @@ export class AddProductComponent implements OnInit, OnDestroy {
   constructor(
     private productService: ProductService,
     private utilisateurService: UtilisateurService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      if (params['edit']) {
+        this.isEditMode = true;
+        this.editProductId = params['edit'];
+        this.loadProductForEdit();
+      }
+    });
     this.loadUser();
   }
 
@@ -150,6 +160,29 @@ export class AddProductComponent implements OnInit, OnDestroy {
     });
   }
 
+  loadProductForEdit() {
+    this.productService.getProduct(this.editProductId).subscribe({
+      next: (res: any) => {
+        const product = res.data;
+        this.title = product.title;
+        this.description = product.description;
+        this.price = product.price;
+        this.categoryId = product.categoryId;
+        this.categorySearch = product.category?.libelle || '';
+        // Load existing images
+        if (product.images && product.images.length > 0) {
+          this.capturedImages = product.images.map((img: any) => img.url);
+          this.isFormDisabled = false;
+        }
+      },
+      error: (err) => {
+        console.error('Erreur chargement produit:', err);
+        alert('Erreur lors du chargement du produit à modifier.');
+        this.router.navigate(['/dashboard']);
+      },
+    });
+  }
+
   filterCategories() {
     const search = this.categorySearch.trim().toLowerCase();
     this.filteredCategories = search
@@ -167,7 +200,7 @@ export class AddProductComponent implements OnInit, OnDestroy {
 
   /** =============================
    * 🔹 Gestion fichiers
-   * ============================= */
+     * ============================= */
   onFileSelected(event: any) {
     const files = event.target.files;
     if (!files?.length) return;
@@ -216,22 +249,28 @@ export class AddProductComponent implements OnInit, OnDestroy {
     formData.append('description', this.description);
     formData.append('price', this.price.toString());
     formData.append('categoryId', this.categoryId);
-    formData.append('userId', this.userId);
+    if (!this.isEditMode) {
+      formData.append('userId', this.userId);
+    }
 
     this.capturedFiles.forEach((file, i) => {
       formData.append('images', file, `image${i + 1}.png`);
     });
 
-    this.productService.createProduct(formData).subscribe({
+    const serviceCall = this.isEditMode
+      ? this.productService.updateProduct(this.editProductId, formData)
+      : this.productService.createProduct(formData);
+
+    serviceCall.subscribe({
       next: () => {
         this.isSubmitting = false;
-        alert('✅ Produit ajouté avec succès !');
-        this.router.navigate(['/']);
+        alert(`✅ Produit ${this.isEditMode ? 'modifié' : 'ajouté'} avec succès !`);
+        this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        console.error('Erreur création produit:', err);
+        console.error('Erreur soumission produit:', err);
         this.isSubmitting = false;
-        this.errors.general = "Erreur lors de l'ajout du produit.";
+        this.errors.general = `Erreur lors de ${this.isEditMode ? 'la modification' : 'l\'ajout'} du produit.`;
       },
     });
   }

@@ -89,19 +89,27 @@
                       </div>
                     }
 
-                    <!-- Renew Button (only for valid products that can be renewed) -->
-                    @if (product.status === 'VALIDE' && canRenew(product)) {
+                    <!-- Action Buttons -->
+                    <div class="flex gap-2">
                       <button
-                        (click)="renewProduct(product.id)"
-                        class="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold py-2 px-4 rounded-lg shadow-lg transition-all duration-300 hover:scale-105 text-sm"
+                        (click)="navigateToEditProduct(product.id)"
+                        class="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold py-2 px-4 rounded-lg shadow-lg transition-all duration-300 hover:scale-105 text-sm"
                       >
-                        🔄 Renouveler (+7 jours)
+                        ✏️ Modifier
                       </button>
-                    } @else if (product.status === 'VALIDE' && !canRenew(product)) {
-                      <div class="text-center text-red-400 text-sm py-2">
-                        Produit expiré
-                      </div>
-                    }
+                      @if (product.status === 'VALIDE' && canRenew(product)) {
+                        <button
+                          (click)="renewProduct(product.id)"
+                          class="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold py-2 px-4 rounded-lg shadow-lg transition-all duration-300 hover:scale-105 text-sm"
+                        >
+                          🔄 Renouveler
+                        </button>
+                      } @else if (product.status === 'VALIDE' && !canRenew(product)) {
+                        <div class="flex-1 text-center text-red-400 text-sm py-2">
+                          Expiré
+                        </div>
+                      }
+                    </div>
                   </div>
                 }
               </div>

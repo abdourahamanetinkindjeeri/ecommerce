@@ -52,6 +52,20 @@ export class ApproveProductsComponent implements OnInit {
     });
   }
 
+  rejectProduct(id: string) {
+    this.productService.rejectProduct(id).subscribe({
+      next: (res: any) => {
+        console.log('Product rejected:', res);
+        this.loadPendingProducts(); // Refresh list
+        alert('Produit rejeté avec succès!');
+      },
+      error: (err) => {
+        console.error('Error rejecting product:', err);
+        alert('Erreur lors du rejet du produit.');
+      }
+    });
+  }
+
 
   goBack() {
     this.router.navigate(['/dashboard']);

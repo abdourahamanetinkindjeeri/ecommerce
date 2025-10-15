@@ -93,4 +93,8 @@ export class DashboardComponent implements OnInit {
   navigateToManageCategories() {
     this.router.navigate(['/manage-categories']);
   }
+
+  navigateToEditProduct(productId: string) {
+    this.router.navigate(['/add-product'], { queryParams: { edit: productId } });
+  }
 }
