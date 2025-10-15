@@ -30,6 +30,7 @@ export default function buildProductRoute(controller) {
     router.post("/:id/approve", requireAuth, requireRole('GESTIONNAIRE'), controller.approve.bind(controller));
     router.post("/:id/reject", requireAuth, requireRole('GESTIONNAIRE'), controller.reject.bind(controller));
     router.post("/:id/renew", requireAuth, requireRole('VENDEUR'), controller.renew.bind(controller));
+    router.post("/:id/toggle-vip", requireAuth, requireRole('GESTIONNAIRE'), controller.toggleVip.bind(controller));
     router.delete("/expired", requireAuth, requireRole('GESTIONNAIRE'), controller.deleteExpired.bind(controller));
     router.delete("/:id", requireAuth, controller.delete.bind(controller));
     return router;

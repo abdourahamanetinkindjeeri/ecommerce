@@ -488,4 +488,25 @@ export class ProductController extends BaseController<
       next(err);
     }
   };
+
+  toggleVip = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const product = await prisma.product.findUnique({
+        where: { id },
+      });
+      if (!product) {
+        return res.status(404).json({ error: ProductMessages.NOT_FOUND });
+      }
+      const updatedProduct = await this.service.update(id, {
+        isVip: !product.isVip
+      });
+      res.status(200).json({
+        data: updatedProduct,
+        message: `Produit ${updatedProduct.isVip ? 'marqué comme VIP' : 'retiré du VIP'} avec succès`
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
 }
