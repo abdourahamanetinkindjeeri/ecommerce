@@ -102,46 +102,36 @@
         <!-- Form -->
         <form (ngSubmit)="onSubmit()" class="space-y-6">
 
-           <!-- Category -->
+          <!-- Category -->
           <div>
             <label class="block text-white font-semibold mb-2">Catégorie</label>
-            <div class="relative">
-              <input
-                type="text"
-                [(ngModel)]="categorySearch"
-                name="categorySearch"
-                (input)="filterCategories()"
-                (focus)="showCategoryDropdown = true; filterCategories()"
-                (blur)="hideCategoryDropdown($event)"
-                [disabled]="isFormDisabled"
-                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-purple-200 focus:outline-none focus:border-purple-400 disabled:opacity-50 disabled:cursor-not-allowed pr-10"
-                placeholder="Rechercher et sélectionner une catégorie..."
-                [class]="errors.category ? 'border-red-500' : ''"
-              />
-              <div class="absolute right-3 top-3 text-purple-300 pointer-events-none">🔍</div>
-            </div>
-            @if (showCategoryDropdown && !isFormDisabled) {
-            <div
-              class="absolute z-10 w-full mt-1 bg-white/10 border border-white/20 rounded-xl max-h-48 overflow-y-auto"
+            <button
+              type="button"
+              (click)="openCategoryModal()"
+              [disabled]="isFormDisabled"
+              class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-purple-200 focus:outline-none focus:border-purple-400 disabled:opacity-50 disabled:cursor-not-allowed text-left flex items-center justify-between"
+              [class]="errors.category ? 'border-red-500' : ''"
             >
-              @for (category of filteredCategories; track category.id) {
-              <div
-                (click)="selectCategory(category)"
-                class="px-4 py-2 text-white hover:bg-white/20 cursor-pointer rounded-lg"
-              >
-                {{ category.libelle }}
-                @if (category.description) {
-                <p class="text-sm text-purple-200 opacity-75">{{ category.description }}</p>
-                }
-              </div>
-              } @if (filteredCategories.length === 0) {
-              <div class="px-4 py-2 text-purple-300 italic">Aucune catégorie trouvée</div>
-              }
-            </div>
-            } @if (errors.category) {
+              <span *ngIf="categoryId; else noCategory">
+                {{ getSelectedCategoryName() }}
+              </span>
+              <ng-template #noCategory>
+                <span class="text-purple-200">Sélectionner une catégorie...</span>
+              </ng-template>
+              <span class="text-purple-300">▼</span>
+            </button>
+            @if (errors.category) {
             <p class="text-red-400 text-sm mt-1">{{ errors.category }}</p>
             }
           </div>
+
+          <!-- Category Modal -->
+          <app-category-modal
+            [categories]="categories"
+            [showModal]="showCategoryModal"
+            (categorySelected)="onCategorySelected($event)"
+            (modalClosed)="onModalClosed()"
+          ></app-category-modal>
           <!-- Title -->
           <div>
             <label class="block text-white font-semibold mb-2">Titre du Produit</label>

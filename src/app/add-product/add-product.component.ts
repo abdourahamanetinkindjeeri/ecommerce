@@ -5,11 +5,12 @@ import { ProductService } from '../services/product.service';
 import { UtilisateurService } from '../services/utilisateur';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { CategoryModalComponent } from '../components/category-modal/category-modal.component';
 
 @Component({
   selector: 'app-add-product',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CategoryModalComponent],
   templateUrl: './add-product.html',
   styleUrls: ['./add-product.css'],
 })
@@ -26,11 +27,9 @@ export class AddProductComponent implements OnInit, OnDestroy {
   capturedFiles: File[] = [];
   isFormDisabled = true;
 
-    // Catégories
+  // Catégories
   categories: any[] = [];
-  filteredCategories: any[] = [];
-  categorySearch = '';
-  showCategoryDropdown = false;
+  showCategoryModal = false;
 
   // États UI
   isSubmitting = false;
@@ -154,7 +153,6 @@ export class AddProductComponent implements OnInit, OnDestroy {
     this.productService.getCategories().subscribe({
       next: (res: any) => {
         this.categories = res.data || [];
-        this.filteredCategories = [...this.categories];
       },
       error: (err) => {
         console.error('Erreur catégories:', err);
@@ -170,7 +168,6 @@ export class AddProductComponent implements OnInit, OnDestroy {
         this.description = product.description;
         this.price = product.price;
         this.categoryId = product.categoryId;
-        this.categorySearch = product.category?.libelle || '';
         // Load existing images
         if (product.images && product.images.length > 0) {
           this.capturedImages = product.images.map((img: any) => img.url);
@@ -185,27 +182,22 @@ export class AddProductComponent implements OnInit, OnDestroy {
     });
   }
 
-  filterCategories() {
-    const search = this.categorySearch.trim().toLowerCase();
-    if (!search) {
-      this.filteredCategories = [...this.categories];
-      this.showCategoryDropdown = true;
-    } else {
-      this.filteredCategories = this.categories.filter((cat) => cat.libelle.toLowerCase().includes(search));
-      this.showCategoryDropdown = this.filteredCategories.length > 0;
-    }
+  openCategoryModal() {
+    this.showCategoryModal = true;
   }
 
-  hideCategoryDropdown(event: FocusEvent) {
-    setTimeout(() => {
-      this.showCategoryDropdown = false;
-    }, 200);
-  }
-
-  selectCategory(category: any) {
+  onCategorySelected(category: any) {
     this.categoryId = category.id;
-    this.categorySearch = category.libelle;
-    this.showCategoryDropdown = false;
+    this.showCategoryModal = false;
+  }
+
+  onModalClosed() {
+    this.showCategoryModal = false;
+  }
+
+  getSelectedCategoryName(): string {
+    const category = this.categories.find(c => c.id === this.categoryId);
+    return category ? category.libelle : '';
   }
 
   /** =============================
