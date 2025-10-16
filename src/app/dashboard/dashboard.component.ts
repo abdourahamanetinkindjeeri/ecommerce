@@ -72,11 +72,24 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  canRenew(product: any): boolean {
+  isExpired(product: any): boolean {
     if (!product.dateExpiration) return false;
     const expirationDate = new Date(product.dateExpiration);
     const now = new Date();
-    return expirationDate > now;
+    return expirationDate <= now;
+  }
+
+  canRenew(product: any): boolean {
+    if (this.isExpired(product)) return false;
+    const expirationDate = new Date(product.dateExpiration);
+    const now = new Date();
+
+    // Calculer le nombre de jours restants
+    const timeDiff = expirationDate.getTime() - now.getTime();
+    const daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+    // Activer seulement si 1 ou 2 jours restants
+    return daysRemaining <= 2 && daysRemaining > 0;
   }
 
   logout() {

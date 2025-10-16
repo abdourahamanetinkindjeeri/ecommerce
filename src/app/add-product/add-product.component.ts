@@ -187,11 +187,19 @@ export class AddProductComponent implements OnInit, OnDestroy {
 
   filterCategories() {
     const search = this.categorySearch.trim().toLowerCase();
-    this.filteredCategories = search
-      ? this.categories.filter((cat) => cat.libelle.toLowerCase().includes(search))
-      : [...this.categories];
+    if (!search) {
+      this.filteredCategories = [...this.categories];
+      this.showCategoryDropdown = true;
+    } else {
+      this.filteredCategories = this.categories.filter((cat) => cat.libelle.toLowerCase().includes(search));
+      this.showCategoryDropdown = this.filteredCategories.length > 0;
+    }
+  }
 
-    this.showCategoryDropdown = this.filteredCategories.length > 0 && !!search;
+  hideCategoryDropdown(event: FocusEvent) {
+    setTimeout(() => {
+      this.showCategoryDropdown = false;
+    }, 200);
   }
 
   selectCategory(category: any) {
