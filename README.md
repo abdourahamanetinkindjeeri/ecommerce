@@ -4,6 +4,60 @@
 
 Ce projet suit une architecture modulaire où chaque module contient sa propre logique métier, ses contrôleurs, routes et documentation Swagger.
 
+## Prérequis
+
+Avant de commencer, assurez-vous d'avoir installé :
+- [Node.js](https://nodejs.org/) (version 18 ou supérieure)
+- [npm](https://www.npmjs.com/) (inclus avec Node.js)
+- [Prisma CLI](https://www.prisma.io/docs/concepts/components/prisma-cli) : `npm install -g prisma`
+- Une base de données compatible avec Prisma (PostgreSQL, MySQL, SQLite, etc.)
+
+## Installation
+
+1. Clonez le dépôt :
+   ```bash
+   git clone <url-du-depot>
+   cd eCommerce
+   ```
+
+2. Installez les dépendances :
+   ```bash
+   npm install
+   ```
+
+3. Configurez les variables d'environnement :
+   - Copiez le fichier `.env.example` vers `.env`
+   - Remplissez les variables nécessaires (base de données, clés JWT, etc.)
+
+4. Configurez Prisma :
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
+
+   Optionnel : Alimentez la base avec des données de test :
+   ```bash
+   npx prisma db seed
+   ```
+
+## Démarrage
+
+Pour démarrer le serveur en mode développement :
+```bash
+npm run dev
+```
+
+Le serveur sera accessible sur `http://localhost:5173`.
+
+Pour la documentation Swagger, visitez `http://localhost:5173/api-docs`.
+
+## Construction pour la production
+
+```bash
+npm run build
+npm start
+```
+
 ## Structure des Modules
 
 Chaque module suit la structure suivante :
@@ -36,6 +90,10 @@ src/modules/[nom-module]/
   - Filtrage par statut, catégorie, utilisateur
   - Recherche par titre/description
   - Gestion des statuts (EN_ATTENTE, VALIDE, EXPIRE)
+  - **Fonctionnalité VIP**: Les gestionnaires peuvent marquer les produits approuvés comme VIP
+    - Route: `POST /api/products/:id/toggle-vip` (réservée aux GESTIONNAIRE)
+    - Les produits VIP sont prioritaires dans les listes (tri par `isVip DESC`)
+    - Affichage spécial avec icône ⭐ sur le frontend
 - **Fichiers**:
   - `swagger.product.schema.ts` - Documentation Swagger
   - `product.controller.ts` - Contrôleurs avec interfaces

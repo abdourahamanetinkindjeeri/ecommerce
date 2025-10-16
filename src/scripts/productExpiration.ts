@@ -38,12 +38,59 @@ async function renewProduct(productId: string) {
   console.log(`Produit ${productId} renouvelé jusqu'au ${newExpirationDate.toISOString()}.`);
 }
 
+// Envoie des rappels de renouvellement pour les produits expirant dans moins de 2 jours
+async function sendRenewalReminders() {
+  const now = new Date();
+  const twoDaysFromNow = new Date(now);
+  twoDaysFromNow.setDate(now.getDate() + 2);
+
+  // Trouver les produits expirant dans moins de 2 jours
+  const productsToRemind = await prisma.product.findMany({
+    where: {
+      dateExpiration: {
+        gte: now,
+        lte: twoDaysFromNow,
+      },
+      status: 'VALIDE',
+    },
+    include: {
+      user: true,
+      notifications: {
+        where: {
+          type: 'RENEWAL_REMINDER',
+          createdAt: {
+            gte: new Date(now.getTime() - 24 * 60 * 60 * 1000), // Pas de rappel dans les dernières 24h
+          },
+        },
+      },
+    },
+  });
+
+  for (const product of productsToRemind) {
+    // Vérifier si un rappel a déjà été envoyé récemment
+    if (product.notifications.length === 0) {
+      await prisma.notification.create({
+        data: {
+          message: `Votre produit "${product.title}" expire bientôt. Pensez à le renouveler pour continuer à le publier.`,
+          type: 'RENEWAL_REMINDER',
+          userId: product.userId,
+          productId: product.id,
+        },
+      });
+      console.log(`Rappel envoyé au vendeur pour le produit ${product.id}`);
+    }
+  }
+}
+
 // Exemple d'utilisation
 
 // Tâche automatique chaque jour à minuit
 cron.schedule("0 0 * * *", async () => {
   console.log("Suppression automatique des produits expirés...");
   await deleteExpiredProducts();
+
+  console.log("Envoi des rappels de renouvellement...");
+  await sendRenewalReminders();
 });
 
-export { deleteExpiredProducts, renewProduct };
+export { deleteExpiredProducts, renewProduct, sendRenewalReminders };
